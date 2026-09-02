@@ -1,0 +1,74 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in ['drgigy@gmail.com'];
+    }
+
+    match /adminSettings/{settingId} {
+      allow read: if isAdmin() || request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    match /adminUserDirectory/{userId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin()
+        || (request.auth != null
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasOnly(['uid', 'email', 'lastSeenAt', 'addedAt', 'addedBy']));
+      allow delete: if isAdmin();
+    }
+
+    match /adminDoctorDirectory/{userId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    match /adminUserFeatures/{userId} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+      allow write: if isAdmin();
+    }
+
+    match /adminPatientGroups/{groupId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /adminUserDevices/{userId}/devices/{deviceId} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+      allow create: if isAdmin()
+        || (request.auth != null
+          && request.auth.uid == userId
+          && request.resource.data.uid == userId
+          && request.resource.data.status == 'pending'
+          && request.resource.data.keys().hasOnly(['uid', 'email', 'deviceId', 'label', 'status', 'createdAt', 'lastSeenAt']));
+      allow update: if isAdmin()
+        || (request.auth != null
+          && request.auth.uid == userId
+          && request.resource.data.uid == userId
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.keys().hasOnly(['uid', 'email', 'deviceId', 'label', 'status', 'createdAt', 'lastSeenAt']));
+      allow delete: if isAdmin();
+    }
+
+    match /{path=**}/devices/{deviceId} {
+      allow read: if isAdmin()
+        || (request.auth != null && resource.data.uid == request.auth.uid);
+    }
+
+    match /patientGroups/{groupId}/{document=**} {
+      allow read, write: if isAdmin()
+        || (request.auth != null
+          && get(/databases/$(database)/documents/adminUserFeatures/$(request.auth.uid)).data.sharedPatientGroup == groupId);
+    }
+
+    match /users/{userId}/{document=**} {
+      allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
