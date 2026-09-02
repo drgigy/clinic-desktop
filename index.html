@@ -1139,6 +1139,7 @@
       } = cloudDataModule;
 
       const desktopReadOnlyRecords = true;
+      const desktopRequiresDeviceApproval = false;
       const defaultTests = ["Nerve test", "EEG", "BAER", "VEP", "MRI", "CT scan"];
       let tests = [...defaultTests];
       const storeKey = "clinicDailyPatients.v1";
@@ -6274,7 +6275,17 @@ ${context}`;
       });
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          startDeviceGate(user);
+          if (desktopRequiresDeviceApproval) {
+            startDeviceGate(user);
+            return;
+          }
+          stopDeviceGate();
+          registerSignedInUser(user);
+          document.body.classList.remove("auth-locked");
+          $("#signedInUser").textContent = `Signed in: ${user.email || "Clinic user"}`;
+          $("#loginStatus").textContent = "";
+          $("#loginError").textContent = "";
+          startFirebaseSync();
           return;
         }
         stopDeviceGate();
