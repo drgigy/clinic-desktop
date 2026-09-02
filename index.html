@@ -1120,8 +1120,10 @@
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
       import {
+        browserLocalPersistence,
         getAuth,
         onAuthStateChanged,
+        setPersistence,
         signInWithEmailAndPassword,
         signOut
       } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
@@ -1170,6 +1172,7 @@
       const firebaseApp = initializeApp(firebaseConfig);
       const db = getCloudDataStore(firebaseApp);
       const auth = getAuth(firebaseApp);
+      await setPersistence(auth, browserLocalPersistence);
       function currentUserId() {
         const uid = auth.currentUser?.uid;
         if (!uid) throw new Error("A signed-in user is required for cloud access.");
@@ -6280,7 +6283,7 @@ ${context}`;
             return;
           }
           stopDeviceGate();
-          registerSignedInUser(user);
+          registerSignedInUser(user).catch((error) => console.error("User directory sync failed", error));
           document.body.classList.remove("auth-locked");
           $("#signedInUser").textContent = `Signed in: ${user.email || "Clinic user"}`;
           $("#loginStatus").textContent = "";
