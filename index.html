@@ -1108,14 +1108,10 @@
               <button class="secondary" type="button" data-record-template="certificate" data-feature="printCertificate" role="menuitem">Medical Certificate</button>
             </div>
           </div>
-          <div class="print-menu">
-            <button class="secondary" type="button" id="recordPrintMenuBtn" aria-haspopup="true">Print</button>
-            <div class="print-menu-panel" role="menu" aria-label="Print options">
-              <button class="secondary" type="button" data-record-print="prescription" data-feature="printPrescription" role="menuitem">Prescription</button>
-              <button class="secondary" type="button" data-record-print="reply" data-feature="printReply" role="menuitem">Reply</button>
-              <button class="secondary" type="button" data-record-print="certificate" data-feature="printCertificate" role="menuitem">Certificate</button>
-            </div>
-          </div>
+          <button class="secondary" type="button" id="recordPrintBtn">Print</button>
+          <button class="secondary" type="button" id="recordPrintPrescriptionBtn" data-feature="printPrescription" hidden>Print Prescription</button>
+          <button class="secondary" type="button" id="recordPrintReplyBtn" data-feature="printReply" hidden>Print Reply Letter</button>
+          <button class="secondary" type="button" id="recordPrintCertificateBtn" data-feature="printCertificate" hidden>Print Certificate</button>
           <button class="secondary" type="button" id="recordAddOnBtn" data-feature="woyzNote" hidden>Add On</button>
           <button class="secondary smart-chart-button" type="button" id="recordSummaryBtn" data-feature="smartChart" style="background:#dc2626;color:#fff;box-shadow:inset 0 0 0 2px #991b1b,0 1px 4px rgba(153,27,27,.22);">Smart Chart</button>
           <button class="secondary" type="button" id="recordDiagnosisBtn" data-feature="diagnosis">Diagnosis</button>
@@ -2832,6 +2828,7 @@ ${context}`);
         renderAmbientDock();
         updateAddOnButtonVisibility();
         updateTemplateButtonVisibility();
+        updatePrintButtonsVisibility();
         const starts = document.querySelectorAll("[data-ambient-start]");
         const pauses = document.querySelectorAll("[data-ambient-pause]");
         const stops = document.querySelectorAll("[data-ambient-stop]");
@@ -2874,6 +2871,19 @@ ${context}`);
         const menu = $("#recordTemplateMenu");
         if (!menu) return;
         menu.hidden = activeRecordView !== "all";
+      }
+      function updatePrintButtonsVisibility() {
+        const printBtn = $("#recordPrintBtn");
+        const prescriptionBtn = $("#recordPrintPrescriptionBtn");
+        const replyBtn = $("#recordPrintReplyBtn");
+        const certificateBtn = $("#recordPrintCertificateBtn");
+        const isPrescription = activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "prescription";
+        const isReply = activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "reply";
+        const isCertificate = activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "certificate";
+        if (printBtn) printBtn.hidden = isPrescription || isReply || isCertificate;
+        if (prescriptionBtn) prescriptionBtn.hidden = !isPrescription;
+        if (replyBtn) replyBtn.hidden = !isReply;
+        if (certificateBtn) certificateBtn.hidden = !isCertificate;
       }
       function clearActiveAddOn(resetAudio = false) {
         if (!activeAddOn) return;
@@ -6613,6 +6623,8 @@ ${context}`);
         if (button.dataset.recordPrint === "certificate") window.printCertificate ? window.printCertificate() : printActiveMedicalRecord();
         if (button.id === "recordPrintBtn") printActiveMedicalRecord();
         if (button.id === "recordPrintPrescriptionBtn") printPrescriptionFromVisitNote();
+        if (button.id === "recordPrintReplyBtn") window.printReply ? window.printReply() : printActiveMedicalRecord();
+        if (button.id === "recordPrintCertificateBtn") window.printCertificate ? window.printCertificate() : printActiveMedicalRecord();
         if (button.id === "recordAddOnBtn" && !desktopReadOnlyRecords) startRecordAddOn();
         if (button.id === "recordSummaryBtn") showSmartChart();
         if (button.id === "recordDiagnosisBtn") openRecordDiagnosisModal();
