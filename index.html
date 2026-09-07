@@ -241,11 +241,27 @@
       .print-box strong { font-size: 20px; }
       .record-screen { position: fixed; inset: 0; z-index: 30; display: none; grid-template-rows: auto 1fr; height: 100vh; background: #f6f9fa; color: var(--ink); overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif; }
       .record-screen.open { display: grid; }
-      .record-top { position: sticky; top: 0; z-index: 2; background: #fff; border-bottom: 1px solid var(--line); padding: 14px 18px; display: grid; grid-template-columns: minmax(320px, 1fr) auto; gap: 14px; align-items: start; }
-      .record-patient h1 { font-size: 22px; margin-bottom: 6px; font-weight: 900; }
+      .record-top { position: sticky; top: 0; z-index: 2; background: #fff; border-bottom: 1px solid var(--line); padding: 14px 18px; display: grid; grid-template-columns: minmax(260px, 1fr) auto; gap: 14px; align-items: start; }
+      .record-patient h1 { font-size: 20px; margin-bottom: 4px; font-weight: 900; }
       .record-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; color: var(--muted); font-size: 13px; font-weight: 850; }
+      #recordVisitDate { display: none; }
       .record-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
-      .record-body { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 14px; padding: 14px 18px 18px; min-height: 0; height: calc(100vh - 96px); overflow: hidden; }
+      .print-menu { position: relative; display: inline-flex; }
+      .print-menu-panel { position: absolute; top: calc(100% + 6px); right: 0; z-index: 8; min-width: 190px; display: grid; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; box-shadow: 0 14px 34px rgba(16, 32, 43, .15); opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-4px); transition: opacity .15s ease .65s, transform .15s ease .65s, visibility 0s linear .85s; }
+      .print-menu:hover .print-menu-panel,
+      .print-menu:focus-within .print-menu-panel { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); transition-delay: 0s; }
+      .print-menu-panel button { width: 100%; justify-content: flex-start; background: #f0f5f7; color: var(--ink); box-shadow: none; }
+      .record-body { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 14px; padding: 10px 18px 18px; min-height: 0; height: calc(100vh - 92px); overflow: hidden; }
+      @media (min-width: 761px) {
+        .record-top { align-items: center; padding: 8px 18px; }
+        .record-actions { flex-wrap: nowrap; align-items: center; }
+        .record-actions .primary,
+        .record-actions .secondary { min-height: 34px; padding: 0 11px; font-size: 14px; }
+        .record-actions > button,
+        .record-actions .print-menu > button { width: auto; white-space: nowrap; }
+        .print-menu { flex: 0 0 auto; }
+        .record-body { height: calc(100vh - 72px); padding-top: 8px; }
+      }
       .record-main { display: grid; grid-template-rows: auto 1fr; gap: 10px; min-height: 0; height: 100%; }
       .record-status { min-height: 20px; color: var(--muted); font-size: 13px; font-weight: 850; }
       .ambient-dock { display: none; position: fixed; left: 14px; bottom: 22px; z-index: 45; width: 9cm; height: 6cm; padding: 13px 16px; border: 0; border-radius: 18px; background: #1b1b1d; color: #f7f7fb; box-shadow: 0 20px 46px rgba(16, 24, 43, .28); user-select: none; touch-action: none; cursor: move; }
@@ -318,6 +334,10 @@
       .settings-toolbar button { min-height: 38px; min-width: 42px; padding: 8px 12px; }
       .clinic-style-controls { display: grid; grid-template-columns: minmax(220px, 1fr) 150px; gap: 10px; align-items: end; margin: 8px 0; }
       .clinic-style-controls input[type="color"] { min-height: 44px; padding: 5px; }
+      .settings-check { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; color: var(--ink); font-weight: 850; }
+      .settings-check input { width: 18px; height: 18px; accent-color: var(--primary); flex: 0 0 auto; }
+      .settings-check span { display: grid; gap: 3px; }
+      .settings-check small { color: var(--muted); font-size: 13px; font-weight: 750; line-height: 1.35; }
       .credentials-editor { min-height: 120px; border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; background: #fff; outline: none; line-height: 1.45; }
       .credentials-editor:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(22, 131, 113, .12); }
       .credentials-editor:empty::before { content: attr(data-placeholder); color: var(--muted); white-space: pre-wrap; }
@@ -375,6 +395,9 @@
       .previous-record span { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
       .previous-record .record-doctor { color: #718298; font-size: 11px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
       .previous-record.active .record-doctor { color: #d7fffa; }
+      .record-entry-row .previous-record { display: flex; align-items: center; justify-content: flex-start; gap: 19px; min-height: 54px; padding: 8px 10px; }
+      .record-entry-row .previous-record strong { flex: 0 0 auto; }
+      .record-entry-row .previous-record span { margin-top: 0; font-size: 13px; font-weight: 850; white-space: nowrap; }
       .record-entry-row { display: grid; grid-template-columns: 1fr; gap: 6px; align-items: stretch; }
       .icon-delete { min-height: 38px; width: 38px; padding: 0; color: var(--danger-ink); background: var(--danger); }
       .icon-delete svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -388,6 +411,17 @@
       .smart-chart-actions { display: flex; justify-content: flex-end; gap: 8px; }
       .smart-chart-section { display: grid; gap: 8px; break-inside: avoid; }
       .smart-chart-section h3 { font-size: 16px; font-weight: 900; padding-bottom: 5px; border-bottom: 1px solid var(--line); }
+      .patient-snapshot { border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; background: #fff; display: grid; gap: 10px; }
+      .snapshot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
+      .snapshot-item { border: 1px solid #edf2f5; border-radius: 6px; padding: 9px 10px; background: #fbfdfe; min-width: 0; }
+      .snapshot-item h3 { border: 0; padding: 0; margin: 0 0 5px; font-size: 13px; font-weight: 950; color: #334454; }
+      .snapshot-item ul { margin: 0; padding-left: 17px; display: grid; gap: 3px; }
+      .snapshot-item li { font-size: 13px; line-height: 1.35; }
+      .snapshot-item.allergy-card h3, .snapshot-item.allergy-card li { color: #b91c1c; }
+      .snapshot-date-group { display: grid; gap: 4px; margin-top: 8px; }
+      .snapshot-date-group:first-child { margin-top: 0; }
+      .snapshot-date-title { color: var(--green-dark); font-size: 12px; font-weight: 950; }
+      .snapshot-empty { color: var(--muted); font-weight: 750; }
       .smart-chart-graphs { display: grid; grid-template-columns: 1fr; gap: 10px; }
       .blood-chart { border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; background: #fff; box-shadow: 0 1px 3px rgba(16, 32, 43, .05); }
       .blood-chart-head { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-size: 15px; font-weight: 900; }
@@ -397,6 +431,9 @@
       .blood-chart-value-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; border: 1px solid #edf2f5; border-radius: 6px; padding: 7px 9px; background: #fbfdfe; }
       .blood-chart-date { color: var(--muted); font-weight: 850; white-space: nowrap; }
       .blood-chart-number { color: #991b1b; font-weight: 900; white-space: nowrap; }
+      .vitals-chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 10px; }
+      .vitals-chart-grid .blood-chart svg { height: 190px; }
+      .vitals-chart .blood-chart-number { color: var(--green-dark); }
       .smart-result-list { display: grid; gap: 8px; }
       .smart-result-row { display: grid; grid-template-columns: 140px 150px minmax(0, 1fr) auto; gap: 12px; padding: 10px 0; border-bottom: 1px solid #edf2f5; break-inside: avoid; }
       .smart-result-date { color: var(--muted); font-size: 13px; font-weight: 900; }
@@ -908,6 +945,13 @@
               </div>
               <div id="doctorCredentials" class="credentials-editor" contenteditable="true" role="textbox" aria-label="Doctor credentials" data-placeholder="Doctor credentials"></div>
             </label>
+            <label class="settings-check">
+              <input id="malayalamInstructionsToggle" type="checkbox" />
+              <span>
+                <strong>Malayalam instructions</strong>
+                <small>Include Malayalam patient instruction lines in visit notes and prescription prints.</small>
+              </span>
+            </label>
             <label class="settings-block">
               Reusable patient comments
               <div class="settings-grid">
@@ -1057,14 +1101,27 @@
           </div>
         </div>
           <div class="record-actions">
-          <button class="secondary" type="button" id="recordPrintPrescriptionBtn" data-feature="printPrescription">Print Prescription</button>
+          <div class="print-menu" id="recordTemplateMenu" hidden>
+            <button class="secondary" type="button" id="recordTemplateMenuBtn" aria-haspopup="true">Templates</button>
+            <div class="print-menu-panel" role="menu" aria-label="Templates">
+              <button class="secondary" type="button" data-record-template="reply" data-feature="printReply" role="menuitem">Reply Letter</button>
+              <button class="secondary" type="button" data-record-template="certificate" data-feature="printCertificate" role="menuitem">Medical Certificate</button>
+            </div>
+          </div>
+          <div class="print-menu">
+            <button class="secondary" type="button" id="recordPrintMenuBtn" aria-haspopup="true">Print</button>
+            <div class="print-menu-panel" role="menu" aria-label="Print options">
+              <button class="secondary" type="button" data-record-print="prescription" data-feature="printPrescription" role="menuitem">Prescription</button>
+              <button class="secondary" type="button" data-record-print="reply" data-feature="printReply" role="menuitem">Reply</button>
+              <button class="secondary" type="button" data-record-print="certificate" data-feature="printCertificate" role="menuitem">Certificate</button>
+            </div>
+          </div>
           <button class="secondary" type="button" id="recordAddOnBtn" data-feature="woyzNote" hidden>Add On</button>
           <button class="secondary smart-chart-button" type="button" id="recordSummaryBtn" data-feature="smartChart" style="background:#dc2626;color:#fff;box-shadow:inset 0 0 0 2px #991b1b,0 1px 4px rgba(153,27,27,.22);">Smart Chart</button>
           <button class="secondary" type="button" id="recordDiagnosisBtn" data-feature="diagnosis">Diagnosis</button>
           <button class="secondary" type="button" id="recordCommentsBtn" data-feature="comments">Comments</button>
           <button class="secondary" type="button" id="recordSaveBtn">Save</button>
           <button class="primary" type="button" id="recordSaveCloseBtn">Save & Close</button>
-          <button class="secondary" type="button" id="recordPrintBtn" data-feature="printReply">Print</button>
           <button class="icon-delete" type="button" id="recordDeleteBtn" title="Delete note" aria-label="Delete note" hidden>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M3 6h18" />
@@ -1260,6 +1317,7 @@
         diagnoses: [],
         staffTests: undefined,
         clinicName: "",
+        malayalamInstructions: true,
         clinicNameStyle: parseStoredObject(clinicNameStyleStore, { size: "medium", color: "#17222b" })
       };
       let activeRecordPatientId = "";
@@ -1740,6 +1798,7 @@
             diagnoses: [],
             staffTests: undefined,
             clinicName: "",
+            malayalamInstructions: true,
             clinicNameStyle: parseStoredObject(clinicNameStyleStore, { size: "medium", color: "#17222b" }),
             ...(snapshot.exists() ? snapshot.data() : {})
           };
@@ -1758,7 +1817,10 @@
           if (clinicNameEditor && !$("#settingsModal").classList.contains("open")) {
             clinicNameEditor.innerHTML = clinicSettings.clinicName || "";
           }
-          if (!$("#settingsModal").classList.contains("open")) setClinicNameStyleControls();
+          if (!$("#settingsModal").classList.contains("open")) {
+            setClinicNameStyleControls();
+            setMalayalamInstructionControl();
+          }
           renderCommentSelects();
           renderDiagnosisSelects();
           renderSettingsComments();
@@ -1808,6 +1870,13 @@
           .filter(Boolean))]
           .sort((a, b) => defaultTests.includes(a) && !defaultTests.includes(b) ? -1 : !defaultTests.includes(a) && defaultTests.includes(b) ? 1 : a.localeCompare(b));
         return hasCloudSetting ? cleaned : cleaned.length ? cleaned : [...defaultTests];
+      }
+      function malayalamInstructionsEnabled() {
+        return clinicSettings.malayalamInstructions !== false;
+      }
+      function setMalayalamInstructionControl() {
+        const toggle = $("#malayalamInstructionsToggle");
+        if (toggle) toggle.checked = malayalamInstructionsEnabled();
       }
       function normaliseComments(comments = []) {
         return [...new Set((Array.isArray(comments) ? comments : [])
@@ -1901,6 +1970,7 @@
         }
         if (patch.clinicName !== undefined) writeStore(clinicNameStore, patch.clinicName || "");
         if (patch.clinicNameStyle !== undefined) writeStore(clinicNameStyleStore, JSON.stringify(clinicNameStyle()));
+        if (patch.malayalamInstructions !== undefined) setMalayalamInstructionControl();
         await setDoc(userSettingsDoc(), { ...patch, updatedAt: new Date().toISOString() }, { merge: true });
         renderCommentSelects();
         renderDiagnosisSelects();
@@ -2380,6 +2450,31 @@
           addon: "Add On"
         }[mode] || "Visit note";
       }
+      function prescriptionLanguagePrompt() {
+        if (malayalamInstructionsEnabled()) {
+          return `Use this prescription format:
+1. Tablet Drug name dose
+   Clear English patient instruction without repeating the medicine name.
+   Malayalam patient instruction without repeating the medicine name.`;
+        }
+        return `Use this prescription format:
+1. Tablet Drug name dose
+   Clear English patient instruction without repeating the medicine name.
+
+Do not include translated patient instruction lines. Keep prescription output in English only.`;
+      }
+      function malayalamPromptOverride() {
+        return malayalamInstructionsEnabled()
+          ? ""
+          : "\nClinic setting: translated patient instruction lines are off. Prescription medicines should include the medicine name, dose, and English instruction only.\n";
+      }
+      function languageAdjustedAmbientPrompt(prompt) {
+        if (malayalamInstructionsEnabled()) return prompt;
+        return String(prompt || "")
+          .split("\n")
+          .filter((line) => !/Malayalam|[\u0D00-\u0D7F]/i.test(line))
+          .join("\n");
+      }
       function ambientPrompt(patient, mode = activeAmbientMode) {
         const context = `Patient context:
 Name: ${patient?.name || ""}
@@ -2387,7 +2482,7 @@ ID: ${patient ? patientDisplayId(patient) : ""}
 Mobile: ${patient?.mobile || ""}
 Diagnosis/main symptom: ${patient?.diagnosis || ""}`;
         if (mode === "addon") {
-          return `You are a clinical review add-on assistant helping a doctor create a separate review draft note after an OPD consultation.
+          return languageAdjustedAmbientPrompt(`You are a clinical review add-on assistant helping a doctor create a separate review draft note after an OPD consultation.
 
 Correct spelling and grammar. Keep the original meaning exactly.
 Do not add, infer, assume, or hallucinate clinical information.
@@ -2418,20 +2513,19 @@ Under Review of Investigations, arrange investigations like the main visit-note 
 - under each imaging/report item, place each finding on a separate line
 - for blood reports, include each value on a separate line with appropriate units
 
-If medicines are dictated, use Prescription and format every medicine like this:
-1. Tablet Drug name dose
-   Clear English patient instruction without repeating the medicine name.
-   Malayalam patient instruction without repeating the medicine name.
+If medicines are dictated, use Prescription.
+${prescriptionLanguagePrompt()}
 
 If advice, review plans, follow-up advice, precautions, or investigations to be done are dictated, place them under Advice / Instructions.
 Do not create Chief Complaints, History of Present Illness, Examination, Diagnosis, or Orders headings.
 
 Never add clinical information that was not spoken.
+${malayalamPromptOverride()}
 
-${context}`;
+${context}`);
         }
         if (mode === "prescription") {
-          return `You are a clinical prescription assistant helping a doctor structure a dictated prescription.
+          return languageAdjustedAmbientPrompt(`You are a clinical prescription assistant helping a doctor structure a dictated prescription.
 
 Correct spelling and grammar. Correct obvious medical spelling errors.
 Do not add, infer, assume, or hallucinate medicines or instructions.
@@ -2439,10 +2533,8 @@ Do not remove any dictated medicine or instruction.
 Preserve dictated drug names exactly as brand names when brand names are spoken. Do not convert brand names to generic names.
 Return a single plain text prescription only. Do not return JSON. Do not use markdown fences.
 
-Format every prescribed medicine as a numbered list, one medicine entry at a time:
-1. Tablet Drug name dose
-   Clear English patient instruction without repeating the medicine name.
-   Malayalam patient instruction without repeating the medicine name.
+Format every prescribed medicine as a numbered list, one medicine entry at a time.
+${prescriptionLanguagePrompt()}
 2. ...
 
 Include dose, frequency, route, timing, and duration only if dictated.
@@ -2476,8 +2568,9 @@ If investigations are advised under Advice, place each investigation on its own 
 If the doctor dictates the word "orders", do not create an Orders heading. Route medicine orders into the numbered prescription list, and route non-medicine orders into Advice / Instructions.
 
 Never add clinical information that was not spoken.
+${malayalamPromptOverride()}
 
-${context}`;
+${context}`);
         }
         if (mode === "certificate") {
           return `You are a medical certificate drafting assistant.
@@ -2513,7 +2606,7 @@ Never add clinical information that was not spoken.
 
 ${context}`;
         }
-        return `You are a clinical note assistant helping a doctor create a concise OPD medical note from ambient audio.
+        return languageAdjustedAmbientPrompt(`You are a clinical note assistant helping a doctor create a concise OPD medical note from ambient audio.
 
 Correct spelling and grammar. Keep the original meaning exactly.
 Do not add, infer, assume, or hallucinate clinical information.
@@ -2625,8 +2718,9 @@ Example style for Review of Investigations:
    - Findings line by line.
 
 Never add clinical information that was not spoken.
+${malayalamPromptOverride()}
 
-${context}`;
+${context}`);
       }
       function blobToBase64(blob) {
         return new Promise((resolve, reject) => {
@@ -2737,6 +2831,7 @@ ${context}`;
       function setAmbientButtons() {
         renderAmbientDock();
         updateAddOnButtonVisibility();
+        updateTemplateButtonVisibility();
         const starts = document.querySelectorAll("[data-ambient-start]");
         const pauses = document.querySelectorAll("[data-ambient-pause]");
         const stops = document.querySelectorAll("[data-ambient-stop]");
@@ -2774,6 +2869,11 @@ ${context}`;
         const isSavedVisit = activeRecordView === "single" && Boolean(activeRecordId) && activeAmbientMode === "visit";
         button.hidden = !isSavedVisit;
         button.disabled = Boolean(activeAddOn && ["recording", "paused", "processing"].includes(ambientState));
+      }
+      function updateTemplateButtonVisibility() {
+        const menu = $("#recordTemplateMenu");
+        if (!menu) return;
+        menu.hidden = activeRecordView !== "all";
       }
       function clearActiveAddOn(resetAudio = false) {
         if (!activeAddOn) return;
@@ -3297,14 +3397,17 @@ ${context}`;
             </button>
           </div>
           `).join("")}
-          ${rows.length ? rows.map((record) => `
+          ${rows.length ? rows.map((record) => {
+            const title = record.source === "ambient" ? ambientModeLabel(record.recordKind || "visit") : "Visit Note";
+            return `
           <div class="record-entry-row">
             <button class="secondary previous-record ${activeRecordView === "single" && record.id === activeRecordId ? "active" : ""}" type="button" data-open-record="${record.id}">
-              <strong>${record.source === "ambient" ? `${ambientModeLabel(record.recordKind || "visit")} - ` : ""}${dateTimeLabel(recordTimestamp(record))}</strong>
-              ${recordDoctorLabel(record) ? `<span class="record-doctor">${escapeHtml(recordDoctorLabel(record))}</span>` : ""}
+              <strong>${escapeHtml(title)}</strong>
+              <span>${escapeHtml(dateTimeLabel(recordTimestamp(record)))}</span>
             </button>
           </div>
-        `).join("") : `<div class="empty">No notes yet. Click Add note.</div>`}
+        `;
+          }).join("") : `<div class="empty">No notes yet. Click Add note.</div>`}
         `;
       }
       function medicalPrintDisclaimer() {
@@ -3549,6 +3652,9 @@ ${context}`;
         if (html) return boldVisitNoteHeadingsHtml(html);
         return plainTextToHtml(record.note || "");
       }
+      function printableRecordBody(record) {
+        return record.docs?.printVisit || record.docs?.visit || record.noteHtml || (record.note ? plainTextToHtml(record.note) : "");
+      }
       function treatmentTimelineHtml(records) {
         return `<div class="treatment-summary-print treatment-timeline-print">${records.map((record) => `
           <section class="summary-visit treatment-timeline-entry">
@@ -3559,10 +3665,104 @@ ${context}`;
       }
       function smartChartLines(record) {
         return htmlToPlainText(timelineRecordBody(record))
-          .replace(/\b(Investigations?|Review of investigations|Reports?|Blood reports?|Blood tests?|Medications?|Prescription|Rx|Advice|Diagnosis)\s*:/gi, "\n$1:")
+          .replace(/\b(Vitals|Chief Complaints?|Presenting Complaints?|History of Present Illness|Past Medical or Surgical History|Allergies?|Examination Findings?|Investigations?|Review of investigations|Reports?|Blood reports?|Blood tests?|Labs|Current Medications?|Medications?|Treatment\s*\/\s*Medications|Prescription|Rx|Advice\s*\/\s*Instructions|Advice|Instructions|Follow-?up|Plan|Diagnosis|Review Note)\s*:/gi, "\n$1:")
           .split("\n")
           .map((line) => line.trim())
+          .filter((line) => !hasMalayalamText(line))
           .filter(Boolean);
+      }
+      function smartChartHeadingInfo(value) {
+        const match = String(value || "").trim().match(/^(vitals|chief complaints?|presenting complaints?|history of present illness|past medical or surgical history|allergies?|examination findings?|review of investigations|investigations?|reports?|blood reports?|blood tests?|labs|laboratory results?|current medications?|medications?|treatment\s*\/\s*medications|prescription|rx|advice\s*\/\s*instructions|advice|instructions|follow-?up|plan|diagnosis|review note)\s*:?\s*(.*)$/i);
+        if (!match) return null;
+        const heading = match[1].toLowerCase().replace(/\s+/g, " ").trim();
+        const content = cleanSummaryLine(match[2] || "");
+        let key = "";
+        if (heading === "vitals") key = "vitals";
+        else if (/allerg/.test(heading)) key = "allergies";
+        else if (heading === "diagnosis") key = "diagnosis";
+        else if (/^(review of investigations|investigations?|reports?|blood reports?|blood tests?|labs|laboratory results?)$/.test(heading)) key = "investigations";
+        else if (/^(current medications?|medications?|treatment\s*\/\s*medications|prescription|rx)$/.test(heading)) key = /prescription|rx/.test(heading) ? "prescription" : "medicines";
+        else if (/^(advice\s*\/\s*instructions|advice|instructions|follow-?up|plan)$/.test(heading)) key = "advice";
+        else if (heading === "review note") key = "course";
+        else if (/^(chief complaints?|presenting complaints?|history of present illness|past medical or surgical history|examination findings?)$/.test(heading)) key = "course";
+        return key ? { key, content } : null;
+      }
+      function isEmptyClinicalLine(value) {
+        return /^(nil|none|no|not dictated|not mentioned|not available|na|n\/a|-)+\.?$/i.test(String(value || "").trim());
+      }
+      function smartChartRecordSections(record) {
+        const sections = { vitals: [], allergies: [], diagnosis: [], investigations: [], medicines: [], prescription: [], advice: [], course: [] };
+        let current = "";
+        smartChartLines(record).forEach((line) => {
+          const cleaned = cleanSummaryLine(line);
+          if (!cleaned) return;
+          const heading = smartChartHeadingInfo(cleaned);
+          if (heading) {
+            current = heading.key;
+            if (heading.content && !isEmptyClinicalLine(heading.content)) sections[current].push(heading.content);
+            return;
+          }
+          if (current && !isEmptyClinicalLine(cleaned)) sections[current].push(cleaned);
+        });
+        return sections;
+      }
+      function uniqueConciseItems(items, limit = 4) {
+        const seen = new Set();
+        const clean = [];
+        items.forEach((item) => {
+          const value = cleanSummaryLine(item).replace(/\s+/g, " ").trim();
+          if (!value || isEmptyClinicalLine(value) || hasMalayalamText(value)) return;
+          const key = value.toLowerCase();
+          if (seen.has(key)) return;
+          seen.add(key);
+          clean.push(value);
+        });
+        return clean.slice(-limit);
+      }
+      function extractNumber(value) {
+        const match = String(value || "").match(/(\d[\d,]*(?:\.\d+)?)/);
+        return match ? Number(match[1].replace(/,/g, "")) : null;
+      }
+      function normaliseHeightCm(value) {
+        const source = String(value || "");
+        const number = extractNumber(source);
+        if (!Number.isFinite(number)) return null;
+        if (/\b(m|metre|meter|metres|meters)\b/i.test(source) && !/\bcm\b/i.test(source)) return number * 100;
+        return number;
+      }
+      function smartChartParseVitalsText(text) {
+        const source = String(text || "");
+        const vitals = {};
+        const bp = source.match(/\b(?:bp|blood pressure)\b\s*[:=\-]?\s*(\d{2,3})\s*\/\s*(\d{2,3})(?:\s*mm\s*hg|\s*mmhg)?/i);
+        if (bp) {
+          vitals.bpSystolic = Number(bp[1]);
+          vitals.bpDiastolic = Number(bp[2]);
+        }
+        const pulse = source.match(/\b(?:pulse|pulse rate|heart rate|hr)\b\s*[:=\-]?\s*(\d{2,3})(?:\s*(?:\/\s*min|bpm|per\s*minute))?/i);
+        if (pulse) vitals.pulse = Number(pulse[1]);
+        const spo2 = source.match(/\b(?:spo2|sp\s*o2|oxygen saturation|saturation)\b\s*[:=\-]?\s*(\d{2,3})(?:\s*%)?/i);
+        if (spo2) vitals.spo2 = Number(spo2[1]);
+        const height = source.match(/\b(?:height|ht)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)\s*(cm|m|metre|meter|metres|meters)?/i);
+        if (height) vitals.height = normaliseHeightCm(height[0]);
+        const weight = source.match(/\b(?:weight|wt)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)\s*(kg|kgs|kilogram|kilograms)?/i);
+        if (weight) vitals.weight = extractNumber(weight[0]);
+        const bmi = source.match(/\bbmi\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)/i);
+        if (bmi) vitals.bmi = Number(bmi[1]);
+        if (Number.isFinite(vitals.height) && Number.isFinite(vitals.weight) && !Number.isFinite(vitals.bmi)) {
+          const heightM = vitals.height / 100;
+          if (heightM > 0) vitals.bmi = Number((vitals.weight / (heightM * heightM)).toFixed(1));
+        }
+        return vitals;
+      }
+      function smartChartVitalsLine(vitals) {
+        const parts = [];
+        if (Number.isFinite(vitals.bpSystolic) && Number.isFinite(vitals.bpDiastolic)) parts.push(`BP ${vitals.bpSystolic}/${vitals.bpDiastolic} mmHg`);
+        if (Number.isFinite(vitals.pulse)) parts.push(`Pulse ${vitals.pulse}/min`);
+        if (Number.isFinite(vitals.spo2)) parts.push(`SpO2 ${vitals.spo2}%`);
+        if (Number.isFinite(vitals.height)) parts.push(`Height ${Number(vitals.height.toFixed(1)).toString()} cm`);
+        if (Number.isFinite(vitals.weight)) parts.push(`Weight ${Number(vitals.weight.toFixed(1)).toString()} kg`);
+        if (Number.isFinite(vitals.bmi)) parts.push(`BMI ${Number(vitals.bmi.toFixed(1)).toString()} kg/m2`);
+        return parts.join("; ");
       }
       function smartChartDateLabel(record) {
         return smartChartShortDateLabel(record.date || recordTimestamp(record).slice(0, 10));
@@ -3738,7 +3938,7 @@ ${context}`;
               bloodTestPatterns().forEach(([label, pattern]) => {
                 pattern.lastIndex = 0;
                 [...stripHeading.matchAll(pattern)].forEach((match) => {
-                  const value = Number(match[1]);
+                  const value = Number(String(match[1]).replace(/,/g, ""));
                   if (!Number.isFinite(value)) return;
                   const unit = match[2] || "";
                   const dateInfo = smartChartParsedDate(stripHeading) || currentBloodDate || smartChartResultDate(record, stripHeading);
@@ -3759,32 +3959,77 @@ ${context}`;
         });
         return rows.sort((a, b) => new Date(a.date) - new Date(b.date));
       }
+      function cleanSmartMedicationLine(value) {
+        return cleanSummaryLine(value)
+          .replace(/^\d+\.\s*/, "")
+          .trim();
+      }
+      function isSmartMedicineLine(value) {
+        return /^(tablet|tab|capsule|cap|syrup|injection|inj)\b/i.test(value);
+      }
+      function hasSmartMedicineInstruction(value) {
+        return /\b(take|once|twice|thrice|daily|morning|noon|evening|night|bedtime|after food|before food|with food|empty stomach|as needed|prn|sos|for\s+\d+|for\s+(one|two|three|four|five|six|seven|ten)\s+(day|days|week|weeks|month|months))\b/i.test(value);
+      }
+      function isSmartMedicineInstructionLine(value) {
+        return /^(take|once|twice|thrice|daily|morning|noon|evening|night|bedtime|after food|before food|with food|empty stomach|as needed|if needed|when needed)\b/i.test(value)
+          || /^for\s+\d+\s*(day|days|week|weeks|month|months)\b/i.test(value);
+      }
       function smartChartSections(record) {
         const investigations = [];
         const medications = [];
         let section = "";
+        let pendingMedicine = "";
+        const pushPendingMedicine = () => {
+          if (!pendingMedicine) return;
+          medications.push(pendingMedicine);
+          pendingMedicine = "";
+        };
         smartChartLines(record).forEach((line) => {
           const cleaned = cleanSummaryLine(line);
           if (!cleaned) return;
           if (/^(investigations?|review of investigations|reports?|labs?|blood tests?)\s*:?\s*$/i.test(cleaned)) {
+            pushPendingMedicine();
             section = "investigations";
             return;
           }
           if (/^(medications?|current medications?|prescription|rx|treatment\s*\/\s*medications?|orders)\s*:?\s*$/i.test(cleaned)) {
+            pushPendingMedicine();
             section = "medications";
             return;
           }
           if (/^(chief complaints?|history|examination|diagnosis|advice|follow up|plan)\s*:?\s*$/i.test(cleaned)) {
+            pushPendingMedicine();
             section = "";
             return;
           }
           const isInvestigation = section === "investigations" || isInvestigationSummaryLine(cleaned);
           if (isInvestigation) {
+            pushPendingMedicine();
             investigations.push(cleaned);
             return;
           }
-          if (section === "medications" || isMedicationSummaryLine(cleaned)) medications.push(cleaned);
+          if (section === "medications" || isMedicationSummaryLine(cleaned)) {
+            const medicationLine = cleanSmartMedicationLine(cleaned);
+            if (!medicationLine || hasMalayalamText(medicationLine)) return;
+            if (isSmartMedicineLine(medicationLine)) {
+              pushPendingMedicine();
+              if (hasSmartMedicineInstruction(medicationLine)) {
+                medications.push(medicationLine);
+              } else {
+                pendingMedicine = medicationLine;
+              }
+              return;
+            }
+            if (pendingMedicine && isSmartMedicineInstructionLine(medicationLine)) {
+              medications.push(`${pendingMedicine} - ${medicationLine}`);
+              pendingMedicine = "";
+              return;
+            }
+            pushPendingMedicine();
+            if (isMedicationSummaryLine(medicationLine)) medications.push(medicationLine);
+          }
         });
+        pushPendingMedicine();
         return {
           investigations: [...new Set(investigations)],
           medications: [...new Set(medications)]
@@ -3792,21 +4037,21 @@ ${context}`;
       }
       function bloodTestPatterns() {
         return [
-          ["Hemoglobin", /\b(?:hb|hgb|haemoglobin|hemoglobin)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(g\/?dl|gm%|g%))?/ig],
-          ["WBC", /\b(?:wbc|white blood cells?|tc|total count)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(?:\/?cumm|cells\/?mm3|x?\s*10\^?3)?)?/ig],
-          ["Platelets", /\b(?:platelets?|plt)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(lakhs?|lakh|k|x?\s*10\^?3)?)?/ig],
-          ["Creatinine", /\bcreatinine\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(mg\/?dl))?/ig],
-          ["Urea", /\burea\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(mg\/?dl))?/ig],
-          ["Sodium", /\b(?:sodium|na\+?)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(mmol\/?l|meq\/?l))?/ig],
-          ["Potassium", /\b(?:potassium|k\+?)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(mmol\/?l|meq\/?l))?/ig],
-          ["ESR", /\besr\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(mm\/?hr))?/ig],
-          ["CRP", /\bcrp\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(mg\/?l|mg\/?dl))?/ig],
-          ["TSH", /\btsh\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(miu\/?l|uiu\/?ml))?/ig],
-          ["HbA1c", /\b(?:hba1c|a1c)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(%))?/ig],
-          ["FBS", /\b(?:fbs|fasting blood sugar|fasting glucose)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(mg\/?dl))?/ig],
-          ["PPBS", /\b(?:ppbs|post prandial blood sugar|postprandial glucose)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(mg\/?dl))?/ig],
-          ["ALT", /\b(?:alt|sgpt)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(u\/?l|iu\/?l))?/ig],
-          ["AST", /\b(?:ast|sgot)\b\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?:\s*(u\/?l|iu\/?l))?/ig]
+          ["Hemoglobin", /\b(?:hb|hgb|haemoglobin|hemoglobin)\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(g\/?dl|gm%|g%))?/ig],
+          ["WBC", /\b(?:wbc|white blood cells?|tc|total count)\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(\/?cumm|cells\/?cumm|cells\/?mm3|x?\s*10\^?3))?/ig],
+          ["Platelets", /\b(?:platelets?|plt)(?:\s+count)?\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(lakhs?(?:\/?cumm)?|lakh(?:\/?cumm)?|k|x?\s*10\^?3))?/ig],
+          ["Creatinine", /\bcreatinin(?:e)?\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(mg\/?dl))?/ig],
+          ["Urea", /\burea\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(mg\/?dl))?/ig],
+          ["Sodium", /\b(?:sodium|na\+?)\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(mmol\/?l|meq\/?l))?/ig],
+          ["Potassium", /\b(?:potassium|k\+?)\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(mmol\/?l|meq\/?l))?/ig],
+          ["ESR", /\besr\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(mm\/?hr))?/ig],
+          ["CRP", /\bcrp\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(mg\/?l|mg\/?dl))?/ig],
+          ["TSH", /\btsh\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(miu\/?l|uiu\/?ml))?/ig],
+          ["HbA1c", /\b(?:hba1c|a1c)\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(%))?/ig],
+          ["FBS", /\b(?:fbs|fasting blood sugar|fasting glucose)\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(mg\/?dl))?/ig],
+          ["PPBS", /\b(?:ppbs|post prandial blood sugar|postprandial glucose)\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(mg\/?dl))?/ig],
+          ["ALT", /\b(?:alt|sgpt)\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(u\/?l|iu\/?l))?/ig],
+          ["AST", /\b(?:ast|sgot)\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(u\/?l|iu\/?l))?/ig]
         ];
       }
       function smartChartBloodSeries(records) {
@@ -3824,6 +4069,146 @@ ${context}`;
         return [...series.entries()]
           .map(([label, points]) => ({ label, points: points.sort((a, b) => new Date(a.date) - new Date(b.date)) }))
           .filter((item) => item.points.length);
+      }
+      function smartChartVitalsRows(records) {
+        return records.map((record) => {
+          const sections = smartChartRecordSections(record);
+          const vitalsText = sections.vitals.join("; ");
+          const vitals = smartChartParseVitalsText(vitalsText);
+          const hasVitals = Object.values(vitals).some(Number.isFinite);
+          if (!hasVitals) return null;
+          return {
+            date: recordTimestamp(record),
+            label: smartChartDateLabel(record),
+            vitals,
+            text: smartChartVitalsLine(vitals)
+          };
+        }).filter(Boolean).sort((a, b) => new Date(a.date) - new Date(b.date));
+      }
+      function smartChartDateGroupsHtml(groups) {
+        const visibleGroups = groups.filter((group) => group.items.length);
+        if (!visibleGroups.length) return `<div class="snapshot-empty">No clear saved information.</div>`;
+        return visibleGroups.map((group) => `
+          <div class="snapshot-date-group">
+            <div class="snapshot-date-title">${escapeHtml(group.label)}</div>
+            <ul>${group.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </div>
+        `).join("");
+      }
+      function smartChartCleanNumberedItem(value) {
+        return smartChartCleanInvestigationLine(value).replace(/^\d+\.\s*/, "").trim();
+      }
+      function isMedicineNameLine(value) {
+        return /\b(tablet|tab|capsule|cap|injection|syrup|mg|mcg|ml)\b/i.test(value);
+      }
+      function isMedicineFrequencyLine(value) {
+        return !isMedicineNameLine(value) && /\b(take|once|twice|thrice|daily|morning|noon|night|bedtime|after food|before food|weekly|monthly|as needed|prn|sos)\b/i.test(value);
+      }
+      function mergeSmartChartDateGroups(groups, limit = 12) {
+        const merged = new Map();
+        groups.forEach((group) => {
+          const existing = merged.get(group.label) || [];
+          merged.set(group.label, uniqueConciseItems([...existing, ...group.items], limit));
+        });
+        return [...merged.entries()].map(([label, items]) => ({ label, items }));
+      }
+      function smartChartMedicationGroups(records) {
+        return records.map((record) => {
+          const sections = smartChartRecordSections(record);
+          const lines = [...(sections.medicines || []), ...(sections.prescription || [])].map(smartChartCleanNumberedItem).filter(Boolean);
+          const items = [];
+          for (let index = 0; index < lines.length; index += 1) {
+            const line = lines[index];
+            const next = lines[index + 1] || "";
+            const nextLooksLikeDose = next && isMedicineNameLine(line) && isMedicineFrequencyLine(next);
+            items.push(nextLooksLikeDose ? `${line} - ${next}` : line);
+            if (nextLooksLikeDose) index += 1;
+          }
+          return { label: smartChartDateLabel(record), items: uniqueConciseItems(items, 8) };
+        }).filter((group) => group.items.length);
+      }
+      function smartChartInvestigationGroups(records) {
+        const groups = records.map((record) => {
+          const lines = smartChartRecordSections(record).investigations || [];
+          const items = lines.map(smartChartCleanNumberedItem).filter(Boolean);
+          smartChartBloodRows([record]).forEach((row) => {
+            const unit = row.unit || (row.test === "Hemoglobin" ? "g/dL" : "");
+            items.push(`${row.test}: ${row.value}${unit ? ` ${unit}` : ""}`);
+          });
+          smartChartInvestigationRows([record]).forEach((row) => {
+            items.push(`${row.test}: ${row.text}`);
+          });
+          return { label: smartChartDateLabel(record), items: uniqueConciseItems(items, 12) };
+        }).filter((group) => group.items.length);
+        return mergeSmartChartDateGroups(groups, 12);
+      }
+      function smartChartSnapshotCardHtml(title, bodyHtml, className = "") {
+        return `
+          <div class="snapshot-item ${className}">
+            <h3>${escapeHtml(title)}</h3>
+            ${bodyHtml}
+          </div>
+        `;
+      }
+      function smartChartSnapshotListHtml(items) {
+        return items.length
+          ? `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+          : `<div class="snapshot-empty">No clear saved information.</div>`;
+      }
+      function patientSnapshotHtml(patient, records) {
+        const sections = records.map(smartChartRecordSections);
+        const all = (key) => sections.flatMap((section) => section[key] || []);
+        const diagnosisItems = uniqueConciseItems([patient.customDiagnosis || patient.diagnosis || "", ...all("diagnosis")], 5);
+        const allergies = uniqueConciseItems(all("allergies"), 6);
+        const courseItems = uniqueConciseItems(all("course"), 5);
+        const investigationGroups = smartChartInvestigationGroups(records);
+        const medicineGroups = smartChartMedicationGroups(records);
+        const adviceItems = uniqueConciseItems(all("advice"), 5);
+        return `
+          <section class="patient-snapshot">
+            <div class="snapshot-grid">
+              ${smartChartSnapshotCardHtml("Allergies", smartChartSnapshotListHtml(allergies), "allergy-card")}
+              ${smartChartSnapshotCardHtml("Diagnosis / Problem List", smartChartSnapshotListHtml(diagnosisItems))}
+              ${smartChartSnapshotCardHtml("Recent Course", smartChartSnapshotListHtml(courseItems))}
+              ${smartChartSnapshotCardHtml("Key Investigations", smartChartDateGroupsHtml(investigationGroups))}
+              ${smartChartSnapshotCardHtml("Current / Recent Medicines", smartChartDateGroupsHtml(medicineGroups))}
+              ${smartChartSnapshotCardHtml("Advice / Follow-up", smartChartSnapshotListHtml(adviceItems))}
+            </div>
+          </section>
+        `;
+      }
+      function vitalsChartHtml(rows) {
+        if (!rows.length) return "";
+        const definitions = [
+          { label: "BP Systolic", unit: "mmHg", value: (v) => v.bpSystolic },
+          { label: "BP Diastolic", unit: "mmHg", value: (v) => v.bpDiastolic },
+          { label: "Pulse", unit: "/min", value: (v) => v.pulse },
+          { label: "SpO2", unit: "%", value: (v) => v.spo2 },
+          { label: "Height", unit: "cm", value: (v) => v.height },
+          { label: "Weight", unit: "kg", value: (v) => v.weight },
+          { label: "BMI", unit: "kg/m2", value: (v) => v.bmi }
+        ];
+        const series = definitions.map((definition) => ({
+          label: definition.label,
+          points: rows.map((row) => ({
+            date: row.date,
+            label: row.label,
+            value: definition.value(row.vitals),
+            unit: definition.unit
+          })).filter((point) => Number.isFinite(point.value))
+        })).filter((item) => item.points.length);
+        if (!series.length) return "";
+        return `
+          <section class="blood-chart vitals-chart">
+            <div class="blood-chart-head">
+              <span class="smart-editable" contenteditable="true">Vitals Across Visits</span>
+              <span class="blood-chart-unit">Vitals section only</span>
+            </div>
+            <div class="vitals-chart-grid">
+              ${series.map(bloodChartHtml).join("")}
+            </div>
+          </section>
+        `;
       }
       function bloodChartHtml(series) {
         const values = series.points.map((point) => point.value);
@@ -3884,6 +4269,7 @@ ${context}`;
       }
       function smartChartHtml(patient, records) {
         const bloodSeries = smartChartBloodSeries(records);
+        const vitalsRows = smartChartVitalsRows(records);
         return `
           <div class="smart-chart-view">
             <div class="smart-chart-header">
@@ -3899,6 +4285,12 @@ ${context}`;
             <div class="smart-chart-actions">
               <button class="primary" type="button" data-print-smart-chart="true">Print / Save PDF</button>
             </div>
+            ${patientSnapshotHtml(patient, records)}
+            ${vitalsRows.length ? `
+              <section class="smart-chart-section">
+                <div class="smart-chart-graphs">${vitalsChartHtml(vitalsRows)}</div>
+              </section>
+            ` : ""}
             ${bloodSeries.length ? `
               <section class="smart-chart-section">
                 <div class="smart-chart-graphs">${bloodSeries.map(bloodChartHtml).join("")}</div>
@@ -3991,6 +4383,11 @@ ${context}`;
         }
         while (lines.length && !lines[0].trim()) lines.shift();
         return plainTextToHtml(lines.join("\n"));
+      }
+      function stripMalayalamInstructionLinesForDisplay(html) {
+        const text = htmlToPlainText(html || "");
+        if (!text || !hasMalayalamText(text)) return html || "";
+        return plainTextToHtml(text.split("\n").filter((line) => !hasMalayalamText(line)).join("\n"));
       }
       function prescriptionTiming(line) {
         const text = line.toLowerCase();
@@ -4419,9 +4816,38 @@ ${context}`;
           </div>
         `;
       }
+      function documentPrintTitle(mode = "certificate") {
+        return mode === "reply" ? "REPLY LETTER" : "MEDICAL CERTIFICATE";
+      }
+      function formatDocumentPrintHtml(html, patient, mode = "certificate") {
+        const title = documentPrintTitle(mode);
+        const dateText = activeRecordCreatedAt ? dateLabel(activeRecordCreatedAt.slice(0, 10)) : dateLabel(localDateKey());
+        const bodyHtml = mode === "certificate"
+          ? stripCertificateDemographics(stripDuplicateDocumentTitle(html, ambientModeLabel(mode)))
+          : stripDuplicateDocumentTitle(html, ambientModeLabel(mode));
+        return `
+          <div class="prescription-sheet document-print-sheet">
+            <div class="prescription-banner">${medicalPrintSignature("prescription-header-signature")}</div>
+            <div class="prescription-content">
+              <div class="prescription-patient-plain">
+                <h1>${escapeHtml(patient?.name || "-")}</h1>
+                <div class="prescription-patient-meta">
+                  Age: ${escapeHtml(patient?.age ? `${patient.age} years` : "-")} |
+                  Sex: ${escapeHtml(patient?.sex || "-")} |
+                  UHID: ${escapeHtml(patient ? patientDisplayId(patient) : "-")} |
+                  ${escapeHtml(dateText)}
+                </div>
+              </div>
+              <div class="prescription-rx-title">${title}</div>
+              <div class="document-print-body">${bodyHtml || ""}</div>
+              ${medicalPrintSignature("prescription-signature")}
+            </div>
+          </div>
+        `;
+      }
       function activeMedicalPrintBody() {
         const rawHtml = ["single", "draft"].includes(activeRecordView)
-          ? (activeRecordDocs.visit || "No notes entered.")
+          ? (activeRecordDocs.printVisit || activeRecordDocs.visit || "No notes entered.")
           : ($("#medicalNoteText").innerHTML || "No notes entered.");
         if (activeRecordView === "smart") {
           const container = document.createElement("div");
@@ -4436,7 +4862,7 @@ ${context}`;
         if (activeRecordView !== "all" && activeRecordSource === "ambient" && ["prescription", "certificate", "reply"].includes(activeAmbientMode)) {
           const withoutTitle = stripDuplicateDocumentTitle(rawHtml, ambientModeLabel(activeAmbientMode));
           if (activeAmbientMode === "prescription") return formatPrescriptionPrintHtml(withoutTitle, activeRecordPatient());
-          return activeAmbientMode === "certificate" ? stripCertificateDemographics(withoutTitle) : withoutTitle;
+          return formatDocumentPrintHtml(withoutTitle, activeRecordPatient(), activeAmbientMode);
         }
         return rawHtml;
       }
@@ -4487,7 +4913,7 @@ ${context}`;
       }
       function prescriptionHtmlFromRecord(record) {
         if (!record) return "";
-        const html = record.docs?.visit || record.noteHtml || (record.note ? plainTextToHtml(record.note) : "");
+        const html = printableRecordBody(record);
         if ((record.recordKind || "visit") === "prescription") return stripDuplicateDocumentTitle(html, "Prescription");
         return extractPrescriptionFromVisitHtml(html) || ((record.recordKind || "visit") === "addon" ? extractPrescriptionFallbackHtml(html) : "");
       }
@@ -4501,7 +4927,7 @@ ${context}`;
           seen.add(key);
           fragments.push(html);
         };
-        addFragment(extractPrescriptionFromVisitHtml(activeRecordDocs.visit || $("#medicalNoteText").innerHTML));
+        addFragment(extractPrescriptionFromVisitHtml(activeRecordDocs.printVisit || activeRecordDocs.visit || $("#medicalNoteText").innerHTML));
         patientMedicalRecords(patient).forEach((record) => {
           if (record.id === activeRecordId) return;
           const recordDay = record.date || recordTimestamp(record).slice(0, 10);
@@ -4625,6 +5051,7 @@ ${context}`;
       function openSettingsModal() {
         $("#clinicName").innerHTML = clinicNameHtml();
         setClinicNameStyleControls();
+        setMalayalamInstructionControl();
         $("#doctorCredentials").innerHTML = doctorCredentialsHtml();
         renderSettingsComments();
         renderSettingsDiagnoses();
@@ -4702,6 +5129,7 @@ ${context}`;
         if (!patient) return;
         if (["single", "draft"].includes(activeRecordView)) persistCurrentRecordTab();
         const isPrescriptionPrint = activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "prescription";
+        const isDocumentPrint = activeRecordView !== "all" && activeRecordSource === "ambient" && ["certificate", "reply"].includes(activeAmbientMode);
         const metaText = activeRecordView === "smart"
           ? ""
           : activeRecordView === "all"
@@ -4709,7 +5137,7 @@ ${context}`;
             : `ID: ${patientDisplayId(patient)} | Mobile: ${patient.mobile || "-"} | ${activeRecordSource === "ambient" ? ambientModeLabel(activeAmbientMode) : "Note"}: ${dateTimeLabel(activeRecordCreatedAt)}`;
         const printContent = $("#medicalPrintContent");
         printContent.classList.toggle("smart-print-content", activeRecordView === "smart");
-        printContent.innerHTML = isPrescriptionPrint
+        printContent.innerHTML = (isPrescriptionPrint || isDocumentPrint)
           ? activeMedicalPrintBody()
           : activeRecordView === "smart"
             ? activeMedicalPrintBody()
@@ -4719,11 +5147,22 @@ ${context}`;
             <div>${activeMedicalPrintBody()}</div>
             ${medicalPrintFooter()}
           `;
-        document.body.classList.toggle("print-prescription", isPrescriptionPrint);
+        document.body.classList.toggle("print-prescription", isPrescriptionPrint || isDocumentPrint);
         document.body.classList.toggle("print-smart-chart", activeRecordView === "smart");
         document.body.classList.add("print-medical");
         window.print();
       }
+      window.woyzPrintLetterContent = function(type, content) {
+        const patient = activeRecordPatient();
+        if (!patient) return;
+        const html = /<\/?[a-z][\s\S]*>/i.test(String(content || "")) ? content : plainTextToHtml(content || "");
+        const printContent = $("#medicalPrintContent");
+        printContent.classList.remove("smart-print-content");
+        printContent.innerHTML = formatDocumentPrintHtml(html, patient, type);
+        document.body.classList.remove("print-smart-chart");
+        document.body.classList.add("print-medical", "print-prescription");
+        window.print();
+      };
       async function saveActiveMedicalRecord() {
         const patient = activeRecordPatient();
         if (!patient) return;
@@ -4739,6 +5178,13 @@ ${context}`;
         }
         if (!activeRecordId) return;
         persistCurrentRecordTab();
+        const originalVisitHtml = activeRecordDocs.visit || $("#medicalNoteText").innerHTML || "";
+        const shouldHideMalayalamInSavedRecord = activeRecordSource === "ambient" && ["visit", "prescription"].includes(activeAmbientMode);
+        const displayVisitHtml = shouldHideMalayalamInSavedRecord ? stripMalayalamInstructionLinesForDisplay(originalVisitHtml) : originalVisitHtml;
+        const docsForSave = { ...activeRecordDocs, visit: displayVisitHtml };
+        if (displayVisitHtml !== originalVisitHtml) docsForSave.printVisit = originalVisitHtml;
+        activeRecordDocs = docsForSave;
+        $("#medicalNoteText").innerHTML = displayVisitHtml;
         const details = collectRecordDetails();
         Object.assign(patient, {
           age: details.age,
@@ -4769,9 +5215,9 @@ ${context}`;
           diagnosis: patient.diagnosis || "",
           customDiagnosis: patient.customDiagnosis || "",
           date: activeRecordDate || patient.date,
-          note: activeRecordDocs.visit ? htmlToPlainText(activeRecordDocs.visit) : $("#medicalNoteText").innerText,
-          noteHtml: activeRecordDocs.visit || $("#medicalNoteText").innerHTML,
-          docs: activeRecordDocs,
+          note: displayVisitHtml ? htmlToPlainText(displayVisitHtml) : $("#medicalNoteText").innerText,
+          noteHtml: displayVisitHtml || $("#medicalNoteText").innerHTML,
+          docs: docsForSave,
           details,
           source: activeRecordSource,
           recordKind: activeRecordSource === "ambient" ? activeAmbientMode : "visit",
@@ -6159,6 +6605,12 @@ ${context}`;
         if (button.id === "savePdfAccountsBtn" || button.id === "printInlineAccountsBtn") { document.body.classList.add("print-accounts"); window.print(); }
         if (button.id === "recordSaveBtn") await saveActiveMedicalRecord();
         if (button.id === "recordSaveCloseBtn") { await saveActiveMedicalRecord(); closeMedicalRecordScreen(); }
+        if (button.dataset.recordTemplate) {
+          alert("Template drafts are available in the clinic website. This desktop view is read-only for creating new notes.");
+        }
+        if (button.dataset.recordPrint === "prescription") printPrescriptionFromVisitNote();
+        if (button.dataset.recordPrint === "reply") window.printReply ? window.printReply() : printActiveMedicalRecord();
+        if (button.dataset.recordPrint === "certificate") window.printCertificate ? window.printCertificate() : printActiveMedicalRecord();
         if (button.id === "recordPrintBtn") printActiveMedicalRecord();
         if (button.id === "recordPrintPrescriptionBtn") printPrescriptionFromVisitNote();
         if (button.id === "recordAddOnBtn" && !desktopReadOnlyRecords) startRecordAddOn();
@@ -6197,7 +6649,8 @@ ${context}`;
             color: $("#clinicNameColor").value
           };
           const credentials = cleanCredentialsHtml($("#doctorCredentials").innerHTML);
-          await saveClinicSettingsPatch({ clinicName, clinicNameStyle, doctorCredentials: credentials });
+          const malayalamInstructions = $("#malayalamInstructionsToggle")?.checked !== false;
+          await saveClinicSettingsPatch({ clinicName, clinicNameStyle, doctorCredentials: credentials, malayalamInstructions });
           $("#settingsStatus").textContent = "Settings saved.";
           closeSettingsModal();
         }
@@ -6206,7 +6659,7 @@ ${context}`;
         if (button.id === "prevDateBtn") shiftSelectedDate(-1);
         if (button.id === "nextDateBtn") shiftSelectedDate(1);
       });
-      window.addEventListener("afterprint", () => document.body.classList.remove("print-accounts", "print-medical", "print-prescription"));
+      window.addEventListener("afterprint", () => document.body.classList.remove("print-accounts", "print-medical", "print-prescription", "print-smart-chart"));
       window.addEventListener("resize", applyAmbientFloatPosition);
       document.addEventListener("change", (event) => {
         if (event.target.id === "clinicDate") {
@@ -6470,6 +6923,10 @@ ${context}`;
       alert(type === "certificate"
         ? "No certificate text found in the selected note. Please select or generate a certificate note first."
         : "No reply letter text found in the selected note. Please select or generate a reply letter note first.");
+      return;
+    }
+    if (window.woyzPrintLetterContent) {
+      window.woyzPrintLetterContent(type, content);
       return;
     }
 
