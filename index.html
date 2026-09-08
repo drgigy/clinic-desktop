@@ -3550,8 +3550,11 @@ ${context}`);
       function plainTextToHtml(value) {
         return String(value || "").split(/\r?\n/).map((line) => {
           const escaped = escapeHtml(line);
-          return isVisitNoteHeadingLine(line) ? `<strong>${escaped}</strong>` : escaped;
+          return isVisitNoteHeadingLine(line) ? `<strong>${escaped}</strong>` : formatVitalsLabelsHtml(escaped);
         }).join("<br>");
+      }
+      function formatVitalsLabelsHtml(escapedLine) {
+        return String(escapedLine || "").replace(/\b(BP|Pulse rate|Oxygen saturation|Height|Weight|BMI)\s*:/gi, (match, label) => `<strong>${label}:</strong>`);
       }
       function htmlToPlainText(value) {
         const container = document.createElement("div");
@@ -3559,7 +3562,7 @@ ${context}`);
         return container.innerText || container.textContent || "";
       }
       function isVisitNoteHeadingLine(value) {
-        return /^(chief complaints?|history of present illness|past medical or surgical history|allergies|examination findings?|review of investigations|current medications?|diagnosis|prescription|advice(?:\s*\/\s*instructions)?|review note)\s*:$/i.test(String(value || "").trim());
+        return /^(vitals|chief complaints?|history of present illness|past medical or surgical history|allergies|examination findings?|review of investigations|current medications?|diagnosis|prescription|advice(?:\s*\/\s*instructions)?|review note)\s*:$/i.test(String(value || "").trim());
       }
       function boldVisitNoteHeadingsHtml(value) {
         const source = String(value || "");
