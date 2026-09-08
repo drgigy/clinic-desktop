@@ -4100,13 +4100,32 @@ ${context}`);
           ["AST", /\b(?:ast|sgot)\b\s*[:=\-]?\s*(\d[\d,]*(?:\.\d+)?)(?:\s*(u\/?l|iu\/?l))?/ig]
         ];
       }
+      function defaultSmartChartBloodUnit(label) {
+        return {
+          Hemoglobin: "g/dL",
+          WBC: "cells/cumm",
+          Platelets: "lakhs/cumm",
+          Creatinine: "mg/dL",
+          Urea: "mg/dL",
+          Sodium: "mEq/L",
+          Potassium: "mEq/L",
+          ESR: "mm/hr",
+          CRP: "mg/L",
+          TSH: "mIU/L",
+          HbA1c: "%",
+          FBS: "mg/dL",
+          PPBS: "mg/dL",
+          ALT: "U/L",
+          AST: "U/L"
+        }[label] || "";
+      }
       function smartChartBloodSeries(records) {
         const series = new Map();
         smartChartBloodRows(records).forEach((row) => {
           const points = series.get(row.test) || [];
           points.push({
             value: row.value,
-            unit: row.unit || "",
+            unit: row.unit || defaultSmartChartBloodUnit(row.test),
             date: row.date,
             label: row.label
           });
@@ -4178,7 +4197,7 @@ ${context}`);
           const lines = smartChartRecordSections(record).investigations || [];
           const items = lines.map(smartChartCleanNumberedItem).filter(Boolean);
           smartChartBloodRows([record]).forEach((row) => {
-            const unit = row.unit || (row.test === "Hemoglobin" ? "g/dL" : "");
+            const unit = row.unit || defaultSmartChartBloodUnit(row.test);
             items.push(`${row.test}: ${row.value}${unit ? ` ${unit}` : ""}`);
           });
           smartChartInvestigationRows([record]).forEach((row) => {
@@ -4810,12 +4829,13 @@ ${context}`);
           .filter((line) => !isDemographicLine(line) && !isPrescriptionSectionHeading(line));
         const { medicineItems, adviceLines } = splitPrescriptionLines(lines);
         const dateText = activeRecordCreatedAt ? dateLabel(activeRecordCreatedAt.slice(0, 10)) : dateLabel(localDateKey());
+        const shouldPrintMalayalam = malayalamInstructionsEnabled();
         const medicineRows = medicineItems.map((item, index) => {
           const details = prescriptionLineDetails(item.line);
           const englishLine = descriptivePrescriptionLine(details, item.line, item.extra || []);
-          const malayalamLines = (item.malayalam || [])
+          const malayalamLines = shouldPrintMalayalam ? (item.malayalam || [])
             .map((line) => `<div class="prescription-malayalam">${escapeHtml(line)}</div>`)
-            .join("");
+            .join("") : "";
           return `
             <div class="prescription-item">
               <div class="prescription-number">${index + 1}.</div>
