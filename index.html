@@ -1111,7 +1111,7 @@
           <button class="secondary" type="button" id="recordPrintBtn">Print</button>
           <button class="secondary" type="button" id="recordPrintPrescriptionBtn" data-feature="printPrescription" hidden>Print Prescription</button>
           <button class="secondary" type="button" id="recordPrintReplyBtn" data-feature="printReply" hidden>Print Reply Letter</button>
-          <button class="secondary" type="button" id="recordPrintCertificateBtn" data-feature="printCertificate" hidden>Print Certificate</button>
+          <button class="secondary" type="button" id="recordPrintCertificateBtn" data-feature="printCertificate" hidden>Print Medical Certificate</button>
           <button class="secondary" type="button" id="recordAddOnBtn" data-feature="woyzNote" hidden>Add On</button>
           <button class="secondary smart-chart-button" type="button" id="recordSummaryBtn" data-feature="smartChart" style="background:#dc2626;color:#fff;box-shadow:inset 0 0 0 2px #991b1b,0 1px 4px rgba(153,27,27,.22);">Smart Chart</button>
           <button class="secondary" type="button" id="recordDiagnosisBtn" data-feature="diagnosis">Diagnosis</button>
@@ -2910,10 +2910,11 @@ ${context}`);
         const replyBtn = $("#recordPrintReplyBtn");
         const certificateBtn = $("#recordPrintCertificateBtn");
         const isPrescription = activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "prescription";
+        const hasVisitPrescription = activeRecordView !== "all" && Boolean(extractPrescriptionFromVisitHtml(activeRecordDocs.printVisit || activeRecordDocs.visit || $("#medicalNoteText")?.innerHTML || ""));
         const isReply = activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "reply";
         const isCertificate = activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "certificate";
-        if (printBtn) printBtn.hidden = isPrescription || isReply || isCertificate;
-        if (prescriptionBtn) prescriptionBtn.hidden = !isPrescription;
+        if (printBtn) printBtn.hidden = isPrescription || hasVisitPrescription || isReply || isCertificate;
+        if (prescriptionBtn) prescriptionBtn.hidden = !(isPrescription || hasVisitPrescription);
         if (replyBtn) replyBtn.hidden = !isReply;
         if (certificateBtn) certificateBtn.hidden = !isCertificate;
       }
@@ -4972,7 +4973,10 @@ ${context}`);
           seen.add(key);
           fragments.push(html);
         };
-        addFragment(extractPrescriptionFromVisitHtml(activeRecordDocs.printVisit || activeRecordDocs.visit || $("#medicalNoteText").innerHTML));
+        const activePrescriptionSource = activeRecordDocs.printVisit || activeRecordDocs.visit || $("#medicalNoteText").innerHTML;
+        addFragment(activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "prescription"
+          ? stripDuplicateDocumentTitle(activePrescriptionSource, "Prescription")
+          : extractPrescriptionFromVisitHtml(activePrescriptionSource));
         patientMedicalRecords(patient).forEach((record) => {
           if (record.id === activeRecordId) return;
           const recordDay = record.date || recordTimestamp(record).slice(0, 10);
