@@ -2346,6 +2346,38 @@
           currentMedications: patient.currentMedications || ""
         };
       }
+      function collectPatientIdentityFromNoteText(value) {
+        const identity = {};
+        String(value || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean).forEach((line) => {
+          const match = line.match(/^(patient\s+name|name|age|sex|uhid|id|mobile|mobile\s+number)\s*:\s*(.*)$/i);
+          if (!match) return;
+          const key = match[1].toLowerCase().replace(/\s+/g, " ");
+          const text = match[2].trim();
+          if (!text) return;
+          if (key === "patient name" || key === "name") identity.name = text;
+          if (key === "age") identity.age = text.replace(/\s*years?$/i, "").trim();
+          if (key === "sex") identity.sex = text;
+          if (key === "uhid" || key === "id") identity.patientId = text;
+          if (key === "mobile" || key === "mobile number") identity.mobile = text;
+        });
+        return identity;
+      }
+      function applyRecordPatientIdentityFromNote(patient) {
+        if (!patient) return {};
+        const html = $("#medicalNoteText")?.innerHTML || activeRecordDocs.visit || "";
+        const identity = collectPatientIdentityFromNoteText(htmlToPlainText(html));
+        Object.entries(identity).forEach(([key, value]) => {
+          if (value) patient[key] = value;
+        });
+        if (identity.name || identity.mobile || identity.patientId) patient.sharedPatientIdentity = sharedPatientIdentity(patient);
+        return identity;
+      }
+      function updateRecordPatientHeader(patient = activeRecordPatient()) {
+        if (!patient) return;
+        $("#recordPatientName").textContent = patient.name || "";
+        $("#recordPatientId").textContent = `ID: ${patientDisplayId(patient)}`;
+        $("#recordPatientMobile").textContent = `Mobile: ${patient.mobile || "-"}`;
+      }
       function setRecordDirty() {
         activeRecordDirty = true;
         $("#recordStatus").textContent = "Unsaved changes";
@@ -5198,6 +5230,8 @@ ${context}`);
         if (displayVisitHtml !== originalVisitHtml) docsForSave.printVisit = originalVisitHtml;
         activeRecordDocs = docsForSave;
         $("#medicalNoteText").innerHTML = displayVisitHtml;
+        applyRecordPatientIdentityFromNote(patient);
+        updateRecordPatientHeader(patient);
         const details = collectRecordDetails();
         Object.assign(patient, {
           age: details.age,
