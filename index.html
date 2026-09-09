@@ -98,22 +98,23 @@
         background: var(--green); color: #fff; box-shadow: inset 0 0 0 2px var(--green-dark), 0 1px 4px rgba(0, 79, 51, .22);
       }
       .choice.noshow { background: var(--danger); color: var(--danger-ink); }
-      .queue-overview { display: grid; grid-template-columns: minmax(190px, auto) minmax(0, 1fr); gap: 10px; align-items: stretch; margin-bottom: 12px; min-width: 0; }
-      .queue-overview.search-visible { grid-template-columns: minmax(300px, .48fr) minmax(0, 1fr); }
+      .queue-overview { display: grid; grid-template-columns: minmax(190px, auto) minmax(0, 1fr); gap: 10px; align-items: center; margin-bottom: 12px; min-width: 0; }
+      .queue-overview.search-visible { grid-template-columns: auto minmax(320px, 420px) minmax(0, 1fr); }
       .queue-overview[hidden] { display: none !important; }
-      .queue-overview .doctor-search-panel { margin: 0; min-height: 100%; align-content: center; padding: 10px; }
+      .queue-overview .doctor-search-panel { margin: 0; min-height: 0; align-content: center; padding: 8px; }
       .queue-overview .doctor-search-panel label { display: none; }
       .queue-overview .stats { margin-bottom: 0; }
-      .queue-overview .doctor-search-row textarea { min-height: 36px; height: 36px; padding: 7px 10px; font-size: 14px; font-weight: 750; }
+      .queue-overview .doctor-search-row textarea { min-height: 36px; height: 36px; padding: 8px 10px; font-size: 15px; font-weight: 850; line-height: 20px; }
       .queue-overview .doctor-search-row .secondary { min-height: 36px; }
-      .queue-add-patient { min-height: 100%; padding: 0 18px; white-space: nowrap; }
+      .queue-add-patient { height: 40px; min-height: 40px; max-height: 40px; align-self: center; padding: 0 16px; white-space: nowrap; }
       .doctor-mobile-add { display: none; }
-      .queue-overview.search-visible .queue-add-patient { display: none; }
+      .queue-overview.search-visible .doctor-mobile-add { display: inline-flex; }
       .stats { display: grid; grid-template-columns: repeat(6, minmax(86px, 1fr)); gap: 8px; margin-bottom: 18px; }
-      .stats.doctor-stats { grid-template-columns: repeat(5, minmax(86px, 1fr)); }
+      .stats.doctor-stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
       .stat, .section { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
-      .stat { padding: 8px 10px; }
-      .stat span, .report-item span { display: block; color: var(--muted); font-size: 11px; margin-bottom: 3px; line-height: 1.15; }
+      .stat { min-height: 50px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .stat span { color: var(--muted); font-size: 14px; font-weight: 850; line-height: 1.1; text-align: center; }
+      .report-item span { display: block; color: var(--muted); font-size: 11px; margin-bottom: 3px; line-height: 1.15; }
       .stat strong { font-size: 20px; line-height: 1; }
       .content-grid { display: grid; grid-template-columns: minmax(520px, 1.1fr) minmax(420px, .9fr); gap: 18px; align-items: start; }
       .section { padding: 16px; }
@@ -543,6 +544,8 @@
         body.print-medical.print-prescription .prescription-patient-plain h1 { color: #111; font-size: 19px; font-weight: 900 !important; margin: 0 0 2mm; }
         body.print-medical.print-prescription .prescription-patient-meta { color: #222; font-size: 11px; line-height: 1.3; }
         body.print-medical.print-prescription .prescription-rx-title { color: #15496f; font-size: 14px; font-weight: 900; margin: 0 0 4mm; }
+        body.print-medical.print-prescription .document-print-sheet .prescription-rx-title { text-align: center; margin: 13mm 0 8mm; }
+        body.print-medical.print-prescription .document-print-sheet .document-print-body { line-height: 1.45; }
         body.print-medical.print-prescription .prescription-list { display: flex; flex-direction: column; gap: 3.4mm; margin: 0 0 5mm; }
         body.print-medical.print-prescription .prescription-item { display: grid; grid-template-columns: 28px 1fr; column-gap: 10px; break-inside: avoid; }
         body.print-medical.print-prescription .prescription-number { font-weight: 900; color: #111; line-height: 1.3; }
@@ -588,11 +591,64 @@
         .nav-date-control { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: center; }
         .nav-date-control label { width: 180px; flex-basis: 180px; }
         .queue-overview { grid-template-columns: minmax(170px, auto) minmax(0, 1fr); }
-        .queue-overview.search-visible { grid-template-columns: minmax(260px, .48fr) minmax(0, 1fr); }
+        .queue-overview.search-visible { grid-template-columns: auto minmax(300px, .44fr) minmax(0, 1fr); }
         .content-grid, .post-consult-block, .preview-body, .accounts-grid, .neuro-controls { grid-template-columns: 1fr; }
         .followup-row { grid-template-columns: 1fr 1fr; }
         .section.wide, .preview-area { grid-column: auto; }
         .report-grid { grid-template-columns: repeat(3, minmax(120px, 1fr)); }
+      }
+      @media (min-width: 761px) and (max-width: 1500px) {
+        .queue-overview.search-visible {
+          grid-template-columns: 150px minmax(330px, 370px) minmax(0, 1fr);
+          justify-content: stretch;
+          align-items: center;
+          gap: 8px;
+        }
+        .queue-overview.search-visible .doctor-mobile-add { display: inline-flex; }
+        .queue-overview.search-visible .queue-add-patient {
+          width: 100%;
+          min-width: 0;
+          height: 38px;
+          min-height: 38px;
+          max-height: 38px;
+          padding: 0 12px;
+          font-size: 14px;
+        }
+        .queue-overview.search-visible .doctor-search-panel {
+          width: 100%;
+          padding: 0;
+          border: 0;
+          background: transparent;
+        }
+        .queue-overview.search-visible .doctor-search-row {
+          gap: 6px;
+          align-items: center;
+        }
+        .queue-overview.search-visible .doctor-search-row textarea {
+          height: 38px;
+          min-height: 38px;
+          border: 1px solid var(--line);
+          border-radius: var(--radius);
+          padding: 8px 10px;
+          font-size: 14px;
+        }
+        .queue-overview.search-visible .doctor-search-row .secondary {
+          min-height: 38px;
+          padding: 0 12px;
+          font-size: 14px;
+        }
+        .queue-overview.search-visible .stats {
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          gap: 6px;
+          min-width: 0;
+        }
+        .queue-overview.search-visible .stat {
+          min-height: 38px;
+          padding: 5px 7px;
+          gap: 5px;
+        }
+        .queue-overview.search-visible .stat span { font-size: 13px; line-height: 1.05; }
+        .queue-overview.search-visible .stat strong { font-size: 20px; }
       }
       @media (max-width: 760px) {
         .compact-nav { padding: 10px 16px; }
@@ -695,8 +751,8 @@
           <div class="doctor-search-panel" id="doctorSearchPanel" hidden>
             <label for="doctorPatientSearch">Search previous patient</label>
             <div class="doctor-search-row">
-              <textarea id="doctorPatientSearch" name="patient_lookup_text" rows="1" inputmode="search" enterkeyhint="search" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Name, mobile number, or UHID"></textarea>
-              <button class="secondary" id="clearDoctorSearch" type="button">Clear</button>
+              <textarea id="doctorPatientSearch" name="patient_lookup_text" rows="1" inputmode="search" enterkeyhint="search" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Search name, mobile, ID"></textarea>
+              <button class="secondary" id="doctorSearchActionBtn" type="button">Search</button>
             </div>
             <div class="doctor-search-results" id="doctorPatientSearchResults"></div>
           </div>
@@ -704,8 +760,8 @@
             <div class="stat"><span>Total patients</span><strong id="statTotal">0</strong></div>
             <div class="stat"><span>In clinic</span><strong id="statClinic">0</strong></div>
             <div class="stat"><span>Teleconsultation</span><strong id="statTele">0</strong></div>
-            <div class="stat"><span>Missed</span><strong id="statMissed">0</strong></div>
-            <div class="stat"><span>Marked after visit</span><strong id="statMarked">0</strong></div>
+            <div class="stat"><span>Waiting</span><strong id="statMissed">0</strong></div>
+            <div class="stat"><span>Consulted</span><strong id="statMarked">0</strong></div>
             <div class="stat" id="statDailyTotalCard"><span>Daily total</span><strong id="statDailyTotal">0</strong></div>
           </section>
         </div>
@@ -5312,7 +5368,6 @@ ${context}`);
         const displayVisitHtml = shouldHideMalayalamInSavedRecord ? stripMalayalamInstructionLinesForDisplay(savedVisitHtml) : savedVisitHtml;
         const docsForSave = { ...activeRecordDocs, visit: displayVisitHtml };
         if (displayVisitHtml !== savedVisitHtml) docsForSave.printVisit = savedVisitHtml;
-        else delete docsForSave.printVisit;
         activeRecordDocs = docsForSave;
         $("#medicalNoteText").innerHTML = displayVisitHtml;
         const details = collectRecordDetails();
@@ -5585,7 +5640,10 @@ ${context}`);
         if (document.activeElement !== input && input.value !== doctorSearchQuery) {
           input.value = doctorSearchQuery;
         }
-        const query = doctorSearchQuery.trim().toLowerCase();
+        if (!input.value.trim() && doctorSearchQuery.trim()) doctorSearchQuery = "";
+        const query = input.value.trim().toLowerCase();
+        const actionButton = $("#doctorSearchActionBtn");
+        if (actionButton) actionButton.textContent = query ? "Clear" : "Search";
         if (!query) {
           results.innerHTML = "";
           return;
@@ -5721,7 +5779,7 @@ ${context}`);
       }
       function renderStats() {
         const summary = totals();
-        $("#todayBtn").textContent = weekdayLabel(todayKey);
+        $("#todayBtn").textContent = weekdayLabel(selectedDate);
         $("#todayLabel").textContent = dateLabel(selectedDate);
         $("#afterDateLabel").textContent = dateLabel(selectedDate);
         $("#monthLabel").textContent = monthLabel(selectedDate);
@@ -6556,10 +6614,14 @@ ${context}`);
         if (!button) return;
         if (button.matches("a[id^='send']") && button.getAttribute("href") === "#") { event.preventDefault(); alert("Enter doctor WhatsApp number with country code."); return; }
         if (button.id === "homeMenuBtn") { toggleHomeMenu(); return; }
-        if (button.id === "clearDoctorSearch") {
-          doctorSearchQuery = "";
+        if (button.id === "doctorSearchActionBtn") {
           const doctorSearchInput = $("#doctorPatientSearch");
-          if (doctorSearchInput) doctorSearchInput.value = "";
+          if (doctorSearchQuery.trim()) {
+            doctorSearchQuery = "";
+            if (doctorSearchInput) doctorSearchInput.value = "";
+          } else {
+            doctorSearchInput?.focus();
+          }
           renderDoctorPatientSearch();
           return;
         }
