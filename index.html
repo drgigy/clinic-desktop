@@ -2583,7 +2583,9 @@ Do not remove any dictated detail.
 Return plain text only. Do not return JSON. Do not use markdown fences.
 Do not create a full visit note. Do not include patient demographics.
 
-Use only these headings, in this order, and omit a heading only if there is no dictated content for that section:
+Use only these headings, in this order, and omit a heading only if there is no dictated content for that section. Include Vitals as the first heading only if at least one vital value was dictated:
+
+Vitals:
 
 Review Note:
 
@@ -2597,6 +2599,8 @@ Advice / Instructions:
 
 Plain review text should go under Review Note.
 If allergies or allergens are mentioned, put them under Allergies.
+Move BP, blood pressure, pulse, heart rate, SpO2, oxygen saturation, height, weight, and BMI under Vitals.
+Under Vitals, if used, show one compact line with these labels in this order: "BP: ; Pulse rate: ; Oxygen saturation: ; Height: ; Weight: ; BMI:". Fill only dictated vitals, for example "BP: 120/80 mmHg; Pulse rate: 78/min; Oxygen saturation: 98%; Height: 170 cm; Weight: 70 kg; BMI: 24.2 kg/m2". If height and weight are both dictated and BMI is not dictated, calculate BMI from height and weight and add it to the same line. Do not guess missing vitals. If no vital value was dictated, do not create a Vitals heading or blank vital labels.
 If the dictation contains review of investigations, scan results, lab results, MRI, CT, EEG, NCS, blood reports, or report review, use this heading:
 Review of Investigations:
 
@@ -2705,8 +2709,12 @@ Correct spelling and grammar. Keep the original meaning exactly.
 Do not add, infer, assume, or hallucinate clinical information.
 If something is unclear, write it as unclear instead of guessing.
 Return a single plain text medical note only. Do not return JSON. Do not use markdown fences.
+Do not write "Visit Note" as a title or heading.
+Do not include patient demographics such as patient name, age, sex, ID, UHID, or mobile in the note body.
 
-Use these headings, in this order, but OMIT a heading completely if no information was dictated for that section:
+Use these headings, in this order, but omit a heading completely if no information was dictated for that section. Include Vitals as the first heading only if at least one vital value was dictated:
+
+Vitals:
 
 Chief Complaints:
 
@@ -2734,6 +2742,7 @@ Do not create extra headings.
 Never create a separate "Orders" heading. If the doctor dictates the word "orders", intelligently place those dictated items at the end under Prescription or Advice / Instructions.
 
 Formatting rules:
+- Vitals: if any vital value is dictated, show one compact line with these labels in this order: "BP: ; Pulse rate: ; Oxygen saturation: ; Height: ; Weight: ; BMI:". Fill only dictated vitals, for example "BP: 120/80 mmHg; Pulse rate: 78/min; Oxygen saturation: 98%; Height: 170 cm; Weight: 70 kg; BMI: 24.2 kg/m2". If height and weight are both dictated and BMI is not dictated, calculate BMI from height and weight and add it to the same line. Do not guess missing vitals. If no vital value was dictated, do not create a Vitals heading or blank vital labels.
 - Chief Complaints: each complaint on a separate line.
 - History of Present Illness: one or two concise paragraphs.
 - Past Medical or Surgical History: line by line.
