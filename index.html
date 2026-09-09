@@ -3622,11 +3622,17 @@ ${context}`);
           return isVisitNoteHeadingLine(line) ? `<strong>${escaped}</strong>` : formatVitalsLabelsHtml(escaped);
         }).join("<br>");
       }
+      function isEmptyVitalsLine(value) {
+        const cleaned = String(value || "").replace(/\s+/g, " ").trim();
+        return /^bp\s*:\s*;?\s*pulse(?:\s+rate)?\s*:\s*;?\s*oxygen saturation\s*:\s*;?\s*height\s*:\s*;?\s*weight\s*:\s*;?\s*bmi\s*:?\s*;?$/i.test(cleaned);
+      }
       function formatVitalsLabelsHtml(escapedLine) {
         const line = String(escapedLine || "");
         const formatted = line
           .replace(/\b(BP|Pulse rate|Oxygen saturation|Height|Weight|BMI)\s*:/gi, (match, label) => `<strong>${label}:</strong>`)
-          .replace(/;\s*(?=<strong>(?:BP|Pulse rate|Oxygen saturation|Height|Weight|BMI):<\/strong>)/gi, `;<span class="vitals-gap"></span>`);
+          .replace(/;\s*(?=<strong>(?:BP|Pulse rate|Oxygen saturation|Height|Weight|BMI):<\/strong>)/gi, (match) => (
+            isEmptyVitalsLine(line) ? `;<span class="vitals-gap"></span>` : `${match} `
+          ));
         return /\b(BP|Pulse rate|Oxygen saturation|Height|Weight|BMI)\s*:/i.test(line) ? `<span class="vitals-line">${formatted}</span>` : formatted;
       }
       function htmlToPlainText(value) {
