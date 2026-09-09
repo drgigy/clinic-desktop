@@ -5089,6 +5089,13 @@ ${context}`);
           </div>
         `;
       }
+      function visitNotePrintSourceHtml() {
+        const activeSavedRecord = medicalRecords.find((record) => record.id === activeRecordId);
+        const savedPrintSource = activeSavedRecord?.docs?.printVisit || "";
+        return malayalamInstructionsEnabled()
+          ? (activeRecordDocs.printVisit || savedPrintSource || activeRecordDocs.visit || $("#medicalNoteText").innerHTML || "")
+          : (activeRecordDocs.visit || $("#medicalNoteText").innerHTML || "");
+      }
       function documentPrintTitle(mode = "certificate") {
         return mode === "reply" ? "REPLY LETTER" : "MEDICAL CERTIFICATE";
       }
@@ -5246,7 +5253,7 @@ ${context}`);
           return;
         }
         persistCurrentRecordTab();
-        const sourceHtml = activeRecordDocs.visit || $("#medicalNoteText").innerHTML || "";
+        const sourceHtml = visitNotePrintSourceHtml();
         $("#medicalPrintContent").innerHTML = formatVisitNotePrintHtml(sourceHtml, patient);
         document.body.classList.remove("print-smart-chart");
         document.body.classList.add("print-medical", "print-prescription");
