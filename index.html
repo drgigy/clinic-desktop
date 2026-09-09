@@ -1169,6 +1169,7 @@
             </div>
           </div>
           <button class="secondary" type="button" id="recordPrintBtn">Print</button>
+          <button class="secondary" type="button" id="recordPrintVisitBtn" hidden>Print Visit Note</button>
           <button class="secondary" type="button" id="recordPrintPrescriptionBtn" data-feature="printPrescription" hidden>Print Prescription</button>
           <button class="secondary" type="button" id="recordPrintReplyBtn" data-feature="printReply" hidden>Print Reply</button>
           <button class="secondary" type="button" id="recordPrintCertificateBtn" data-feature="printCertificate" hidden>Print Certificate</button>
@@ -2978,6 +2979,7 @@ ${context}`);
           if (/^print\s+(reply|certificate)$/i.test(button.textContent.trim())) button.remove();
         });
         const printBtn = $("#recordPrintBtn");
+        const visitBtn = $("#recordPrintVisitBtn");
         const prescriptionBtn = $("#recordPrintPrescriptionBtn");
         const replyBtn = $("#recordPrintReplyBtn");
         const certificateBtn = $("#recordPrintCertificateBtn");
@@ -2985,7 +2987,9 @@ ${context}`);
         const hasVisitPrescription = activeRecordView !== "all" && Boolean(extractPrescriptionFromVisitHtml(activeRecordDocs.printVisit || activeRecordDocs.visit || $("#medicalNoteText")?.innerHTML || ""));
         const isReply = activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "reply";
         const isCertificate = activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "certificate";
-        if (printBtn) printBtn.hidden = isPrescription || hasVisitPrescription || isReply || isCertificate;
+        const isVisitNote = ["single", "draft"].includes(activeRecordView) && !isPrescription && !isReply && !isCertificate && !["summary", "addon"].includes(activeAmbientMode);
+        if (printBtn) printBtn.hidden = isPrescription || hasVisitPrescription || isReply || isCertificate || isVisitNote;
+        if (visitBtn) visitBtn.hidden = !isVisitNote;
         if (prescriptionBtn) prescriptionBtn.hidden = !(isPrescription || hasVisitPrescription);
         if (replyBtn) replyBtn.hidden = !isReply;
         if (certificateBtn) certificateBtn.hidden = !isCertificate;
@@ -3747,6 +3751,22 @@ ${context}`);
           if (isEmptyVitalsLine(lines[block.index + 1] || "")) remove.add(block.index + 1);
         });
         return plainTextToHtml(lines.filter((line, index) => !remove.has(index)).join("\n"));
+      }
+      function stripEmptyVitalsHtml(value) {
+        const lines = htmlToPlainText(value).split(/\r?\n/)
+          .map((line) => line.trim().replace(/^visit note\s*(?=vitals\s*:)/i, ""));
+        const remove = new Set();
+        for (let index = 0; index < lines.length; index += 1) {
+          const line = lines[index] || "";
+          const next = lines[index + 1] || "";
+          if (isVitalsHeadingLine(line) && isEmptyVitalsLine(next)) {
+            remove.add(index);
+            remove.add(index + 1);
+          } else if (/^vitals\s*:\s*/i.test(line) && isEmptyVitalsLine(line.replace(/^vitals\s*:\s*/i, ""))) {
+            remove.add(index);
+          }
+        }
+        return plainTextToHtml(lines.filter((line, index) => !remove.has(index)).join("\n").trim());
       }
       function formatVitalsLabelsHtml(escapedLine) {
         const line = String(escapedLine || "");
@@ -5046,6 +5066,29 @@ ${context}`);
           </div>
         `;
       }
+      function formatVisitNotePrintHtml(html, patient) {
+        const dateText = activeRecordCreatedAt ? dateLabel(activeRecordCreatedAt.slice(0, 10)) : dateLabel(localDateKey());
+        const bodyHtml = stripEmptyVitalsHtml(stripDuplicateEmptyVitalsHtml(stripSavedVisitChromeHtml(html)));
+        return `
+          <div class="prescription-sheet document-print-sheet visit-note-print-sheet">
+            <div class="prescription-banner">${medicalPrintSignature("prescription-header-signature")}</div>
+            <div class="prescription-content">
+              <div class="prescription-patient-plain">
+                <h1>${escapeHtml(patient?.name || "-")}</h1>
+                <div class="prescription-patient-meta">
+                  Age: ${escapeHtml(patient?.age ? `${patient.age} years` : "-")} |
+                  Sex: ${escapeHtml(patient?.sex || "-")} |
+                  UHID: ${escapeHtml(patient ? patientDisplayId(patient) : "-")} |
+                  ${escapeHtml(dateText)}
+                </div>
+              </div>
+              <div class="prescription-rx-title">VISIT NOTE</div>
+              <div class="document-print-body visit-note-print-body">${bodyHtml || ""}</div>
+              ${medicalPrintSignature("prescription-signature")}
+            </div>
+          </div>
+        `;
+      }
       function documentPrintTitle(mode = "certificate") {
         return mode === "reply" ? "REPLY LETTER" : "MEDICAL CERTIFICATE";
       }
@@ -5188,6 +5231,24 @@ ${context}`);
           return;
         }
         $("#medicalPrintContent").innerHTML = formatPrescriptionPrintHtml(prescriptionHtml, patient);
+        document.body.classList.add("print-medical", "print-prescription");
+        window.print();
+      }
+      function printVisitNoteFromSelectedRecord() {
+        const patient = activeRecordPatient();
+        if (!patient) return;
+        if (!["single", "draft"].includes(activeRecordView)) {
+          alert("Please select one visit note first, then print visit note.");
+          return;
+        }
+        if (activeRecordSource === "ambient" && ["prescription", "certificate", "reply", "addon"].includes(activeAmbientMode)) {
+          alert("Please select a visit note to print the full visit note.");
+          return;
+        }
+        persistCurrentRecordTab();
+        const sourceHtml = activeRecordDocs.visit || $("#medicalNoteText").innerHTML || "";
+        $("#medicalPrintContent").innerHTML = formatVisitNotePrintHtml(sourceHtml, patient);
+        document.body.classList.remove("print-smart-chart");
         document.body.classList.add("print-medical", "print-prescription");
         window.print();
       }
@@ -6872,6 +6933,7 @@ ${context}`);
         if (button.dataset.recordPrint === "reply") printActiveMedicalRecord();
         if (button.dataset.recordPrint === "certificate") printActiveMedicalRecord();
         if (button.id === "recordPrintBtn") printActiveMedicalRecord();
+        if (button.id === "recordPrintVisitBtn") printVisitNoteFromSelectedRecord();
         if (button.id === "recordPrintPrescriptionBtn") printPrescriptionFromVisitNote();
         if (button.id === "recordPrintReplyBtn") printActiveMedicalRecord();
         if (button.id === "recordPrintCertificateBtn") printActiveMedicalRecord();
