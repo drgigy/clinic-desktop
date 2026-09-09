@@ -3681,9 +3681,10 @@ ${context}`);
       function stripSavedVisitChromeHtml(value) {
         const container = document.createElement("div");
         container.innerHTML = String(value || "");
-        container.querySelectorAll(".draft-patient-line").forEach((node) => node.remove());
+        container.querySelectorAll(".visit-note-title, .draft-patient-line").forEach((node) => node.remove());
         const lines = htmlToPlainText(container.innerHTML).split(/\r?\n/).map((line) => line.trim());
         while (lines.length && !lines[0]) lines.shift();
+        if (/^visit note\s*vitals\s*:?/i.test(lines[0] || "")) lines[0] = lines[0].replace(/^visit note\s*/i, "");
         if (/^visit note\s*:?\s*$/i.test(lines[0] || "")) lines.shift();
         while (lines.length && /^(patient\s+name|name|age|sex|uhid|id|mobile|mobile\s+number)\s*:/i.test(lines[0] || "")) lines.shift();
         while (lines.length && !lines[0]) lines.shift();
@@ -3692,6 +3693,27 @@ ${context}`);
       function isEmptyVitalsLine(value) {
         const cleaned = String(value || "").replace(/\s+/g, " ").trim();
         return /^bp\s*:\s*;?\s*pulse(?:\s+rate)?\s*:\s*;?\s*oxygen saturation\s*:\s*;?\s*height\s*:\s*;?\s*weight\s*:\s*;?\s*bmi\s*:?\s*;?$/i.test(cleaned);
+      }
+      function isVitalsHeadingLine(value) {
+        return /^vitals\s*:?\s*$/i.test(String(value || "").trim());
+      }
+      function stripDuplicateEmptyVitalsHtml(value) {
+        const lines = htmlToPlainText(value).split(/\r?\n/).map((line) => line.trim());
+        const vitalsBlocks = [];
+        for (let index = 0; index < lines.length; index += 1) {
+          if (!isVitalsHeadingLine(lines[index])) continue;
+          const next = lines[index + 1] || "";
+          vitalsBlocks.push({ index, empty: isEmptyVitalsLine(next) });
+        }
+        if (vitalsBlocks.length < 2) return value;
+        const firstNonEmpty = vitalsBlocks.find((block) => !block.empty);
+        const keepIndex = firstNonEmpty ? firstNonEmpty.index : vitalsBlocks[0].index;
+        const remove = new Set();
+        vitalsBlocks.filter((block) => block.index !== keepIndex).forEach((block) => {
+          remove.add(block.index);
+          if (isEmptyVitalsLine(lines[block.index + 1] || "")) remove.add(block.index + 1);
+        });
+        return plainTextToHtml(lines.filter((line, index) => !remove.has(index)).join("\n"));
       }
       function formatVitalsLabelsHtml(escapedLine) {
         const line = String(escapedLine || "");
@@ -5287,7 +5309,7 @@ ${context}`);
             ? formattedTreatmentSummaryHtml(record.docs?.visit || record.noteHtml || record.note || "")
             : ["prescription", "certificate", "reply"].includes(recordKind)
               ? timelineRecordBody(record)
-              : stripSavedVisitChromeHtml(timelineRecordBody(record));
+              : stripDuplicateEmptyVitalsHtml(stripSavedVisitChromeHtml(timelineRecordBody(record)));
           return `
             <section class="timeline-entry" id="entry-${record.id}">
               <h2>${record.source === "ambient" ? `${ambientModeLabel(recordKind)} - ` : ""}${dateTimeLabel(recordTimestamp(record))}</h2>
@@ -5370,6 +5392,10 @@ ${context}`);
         if (displayVisitHtml !== savedVisitHtml) docsForSave.printVisit = savedVisitHtml;
         activeRecordDocs = docsForSave;
         $("#medicalNoteText").innerHTML = displayVisitHtml;
+        if (!["prescription", "certificate", "reply", "summary"].includes(activeAmbientMode)) {
+          activeRecordDocs.visit = stripDuplicateEmptyVitalsHtml(stripSavedVisitChromeHtml(activeRecordDocs.visit || $("#medicalNoteText").innerHTML));
+          $("#medicalNoteText").innerHTML = activeRecordDocs.visit;
+        }
         const details = collectRecordDetails();
         Object.assign(patient, {
           age: details.age,
@@ -5467,7 +5493,7 @@ ${context}`);
           printVisit: record?.docs?.printVisit || ""
         };
         if (activeAmbientMode === "summary") activeRecordDocs.visit = formattedTreatmentSummaryHtml(activeRecordDocs.visit);
-        else if (!["prescription", "certificate", "reply"].includes(activeAmbientMode)) activeRecordDocs.visit = stripSavedVisitChromeHtml(boldVisitNoteHeadingsHtml(activeRecordDocs.visit));
+        else if (!["prescription", "certificate", "reply"].includes(activeAmbientMode)) activeRecordDocs.visit = stripDuplicateEmptyVitalsHtml(stripSavedVisitChromeHtml(boldVisitNoteHeadingsHtml(activeRecordDocs.visit)));
         activeRecordType = "visit";
         $("#medicalNoteText").setAttribute("contenteditable", "true");
         $("#medicalNoteText").innerHTML = activeRecordDocs.visit;
