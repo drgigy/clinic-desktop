@@ -1170,8 +1170,8 @@
           </div>
           <button class="secondary" type="button" id="recordPrintBtn">Print</button>
           <button class="secondary" type="button" id="recordPrintPrescriptionBtn" data-feature="printPrescription" hidden>Print Prescription</button>
-          <button class="secondary" type="button" id="recordPrintReplyBtn" data-feature="printReply" hidden>Print Reply Letter</button>
-          <button class="secondary" type="button" id="recordPrintCertificateBtn" data-feature="printCertificate" hidden>Print Medical Certificate</button>
+          <button class="secondary" type="button" id="recordPrintReplyBtn" data-feature="printReply" hidden>Print Reply</button>
+          <button class="secondary" type="button" id="recordPrintCertificateBtn" data-feature="printCertificate" hidden>Print Certificate</button>
           <button class="secondary" type="button" id="recordAddOnBtn" data-feature="woyzNote" hidden>Add On</button>
           <button class="secondary smart-chart-button" type="button" id="recordSummaryBtn" data-feature="smartChart" style="background:#dc2626;color:#fff;box-shadow:inset 0 0 0 2px #991b1b,0 1px 4px rgba(153,27,27,.22);">Smart Chart</button>
           <button class="secondary" type="button" id="recordDiagnosisBtn" data-feature="diagnosis">Diagnosis</button>
@@ -2974,6 +2974,9 @@ ${context}`);
         menu.hidden = activeRecordView !== "all";
       }
       function updatePrintButtonsVisibility() {
+        document.querySelectorAll(".record-actions button:not([id])").forEach((button) => {
+          if (/^print\s+(reply|certificate)$/i.test(button.textContent.trim())) button.remove();
+        });
         const printBtn = $("#recordPrintBtn");
         const prescriptionBtn = $("#recordPrintPrescriptionBtn");
         const replyBtn = $("#recordPrintReplyBtn");
@@ -3151,8 +3154,25 @@ ${context}`);
           .replace(/\n{3,}/g, "\n\n")
           .trim();
       }
+      function documentTitleForMode(mode = "") {
+        if (mode === "certificate") return "Medical Certificate";
+        if (mode === "reply") return "Reply Letter";
+        return "";
+      }
+      function stripGeneratedDocumentTitleText(text = "", mode = "") {
+        const title = documentTitleForMode(mode);
+        if (!title) return String(text || "").trim();
+        const titlePattern = new RegExp(`^\\s*${title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*:?\\s*$`, "i");
+        return String(text || "")
+          .split(/\r?\n/)
+          .filter((line, index) => index !== 0 || !titlePattern.test(line.trim()))
+          .join("\n")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+      }
       function normalizeGeneratedDocumentText(text = "", mode = "") {
         let value = String(text || "").trim();
+        value = stripGeneratedDocumentTitleText(value, mode);
         if (mode === "reply") value = stripReplyLetterClosingText(value);
         if (mode === "certificate") value = stripGeneratedPatientDemographicsText(value);
         return value;
@@ -3843,6 +3863,9 @@ ${context}`);
       }
       function timelineRecordBody(record) {
         const html = record.docs?.visit || record.noteHtml || "";
+        if (html && ["certificate", "reply"].includes(record.recordKind || "visit")) {
+          return stripDuplicateDocumentTitle(html, documentTitleForMode(record.recordKind || "visit") || ambientModeLabel(record.recordKind || "visit"));
+        }
         if (html) return boldVisitNoteHeadingsHtml(html);
         return plainTextToHtml(record.note || "");
       }
@@ -5321,7 +5344,7 @@ ${context}`);
           const bodyHtml = recordKind === "summary"
             ? formattedTreatmentSummaryHtml(record.docs?.visit || record.noteHtml || record.note || "")
             : ["prescription", "certificate", "reply"].includes(recordKind)
-              ? timelineRecordBody(record)
+              ? stripDuplicateDocumentTitle(timelineRecordBody(record), documentTitleForMode(recordKind) || ambientModeLabel(recordKind))
               : stripDuplicateEmptyVitalsHtml(stripSavedVisitChromeHtml(timelineRecordBody(record)));
           return `
             <section class="timeline-entry" id="entry-${record.id}">
@@ -5508,6 +5531,9 @@ ${context}`);
           printVisit: record?.docs?.printVisit || ""
         };
         if (activeAmbientMode === "summary") activeRecordDocs.visit = formattedTreatmentSummaryHtml(activeRecordDocs.visit);
+        else if (["certificate", "reply"].includes(activeAmbientMode)) {
+          activeRecordDocs.visit = stripDuplicateDocumentTitle(activeRecordDocs.visit, documentTitleForMode(activeAmbientMode) || ambientModeLabel(activeAmbientMode));
+        }
         else if (!["prescription", "certificate", "reply"].includes(activeAmbientMode)) activeRecordDocs.visit = stripDuplicateEmptyVitalsHtml(stripSavedVisitChromeHtml(boldVisitNoteHeadingsHtml(activeRecordDocs.visit)));
         activeRecordType = "visit";
         $("#medicalNoteText").setAttribute("contenteditable", "true");
@@ -6843,12 +6869,12 @@ ${context}`);
           alert("Template drafts are available in the clinic website. This desktop view is read-only for creating new notes.");
         }
         if (button.dataset.recordPrint === "prescription") printPrescriptionFromVisitNote();
-        if (button.dataset.recordPrint === "reply") window.printReply ? window.printReply() : printActiveMedicalRecord();
-        if (button.dataset.recordPrint === "certificate") window.printCertificate ? window.printCertificate() : printActiveMedicalRecord();
+        if (button.dataset.recordPrint === "reply") printActiveMedicalRecord();
+        if (button.dataset.recordPrint === "certificate") printActiveMedicalRecord();
         if (button.id === "recordPrintBtn") printActiveMedicalRecord();
         if (button.id === "recordPrintPrescriptionBtn") printPrescriptionFromVisitNote();
-        if (button.id === "recordPrintReplyBtn") window.printReply ? window.printReply() : printActiveMedicalRecord();
-        if (button.id === "recordPrintCertificateBtn") window.printCertificate ? window.printCertificate() : printActiveMedicalRecord();
+        if (button.id === "recordPrintReplyBtn") printActiveMedicalRecord();
+        if (button.id === "recordPrintCertificateBtn") printActiveMedicalRecord();
         if (button.id === "recordAddOnBtn" && !desktopReadOnlyRecords) startRecordAddOn();
         if (button.id === "recordSummaryBtn") showSmartChart();
         if (button.id === "recordDiagnosisBtn") openRecordDiagnosisModal();
@@ -7236,8 +7262,7 @@ ${context}`);
   }
 
   function installButtons() {
-    addButton("Print Certificate", "certificate");
-    addButton("Print Reply", "reply");
+    return;
   }
 
   window.printCertificate = function () { openPrintWindow("certificate"); };
