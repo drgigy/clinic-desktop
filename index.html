@@ -5005,6 +5005,8 @@ ${context}`);
       function prescriptionHtmlForCurrentPatient(patient) {
         const fragments = [];
         const seen = new Set();
+        const activeSavedRecord = medicalRecords.find((record) => record.id === activeRecordId);
+        const savedPrintSource = activeSavedRecord?.docs?.printVisit || "";
         const addFragment = (html) => {
           const text = htmlToPlainText(html || "").trim();
           const key = text.toLowerCase();
@@ -5012,7 +5014,7 @@ ${context}`);
           seen.add(key);
           fragments.push(html);
         };
-        const activePrescriptionSource = activeRecordDocs.printVisit || activeRecordDocs.visit || $("#medicalNoteText").innerHTML;
+        const activePrescriptionSource = activeRecordDocs.printVisit || savedPrintSource || activeRecordDocs.visit || $("#medicalNoteText").innerHTML;
         addFragment(activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "prescription"
           ? stripDuplicateDocumentTitle(activePrescriptionSource, "Prescription")
           : extractPrescriptionFromVisitHtml(activePrescriptionSource));
@@ -5368,7 +5370,8 @@ ${context}`);
         $("#recordPatientMobile").textContent = `Mobile: ${record?.mobile || patient.mobile || "-"}`;
         $("#recordVisitDate").textContent = dateTimeLabel(activeRecordCreatedAt);
         activeRecordDocs = {
-          visit: record?.docs?.visit || record?.noteHtml || (record?.note ? plainTextToHtml(record.note) : "")
+          visit: record?.docs?.visit || record?.noteHtml || (record?.note ? plainTextToHtml(record.note) : ""),
+          printVisit: record?.docs?.printVisit || ""
         };
         if (activeAmbientMode === "summary") activeRecordDocs.visit = formattedTreatmentSummaryHtml(activeRecordDocs.visit);
         else if (!["prescription", "certificate", "reply"].includes(activeAmbientMode)) activeRecordDocs.visit = boldVisitNoteHeadingsHtml(activeRecordDocs.visit);
