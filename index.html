@@ -5471,6 +5471,7 @@ ${context}`);
         const seen = new Set();
         const activeSavedRecord = medicalRecords.find((record) => record.id === activeRecordId);
         const savedPrintSource = activeSavedRecord?.docs?.printVisit || "";
+        const excludedPrescriptionSourceKinds = new Set(["certificate", "reply", "summary"]);
         const addFragment = (html) => {
           const text = htmlToPlainText(html || "").trim();
           const key = text.toLowerCase();
@@ -5478,16 +5479,19 @@ ${context}`);
           seen.add(key);
           fragments.push(html);
         };
-        const activePrescriptionSource = activeRecordDocs.printVisit || savedPrintSource || activeRecordDocs.visit || $("#medicalNoteText").innerHTML;
-        addFragment(activeRecordView !== "all" && activeRecordSource === "ambient" && activeAmbientMode === "prescription"
-          ? stripDuplicateDocumentTitle(activePrescriptionSource, "Prescription")
-          : extractPrescriptionFromVisitHtml(activePrescriptionSource));
+        if (activeRecordView !== "all") {
+          const activePrescriptionSource = activeRecordDocs.printVisit || savedPrintSource || activeRecordDocs.visit || $("#medicalNoteText").innerHTML;
+          addFragment(activeRecordSource === "ambient" && activeAmbientMode === "prescription"
+            ? stripDuplicateDocumentTitle(activePrescriptionSource, "Prescription")
+            : extractPrescriptionFromVisitHtml(activePrescriptionSource));
+        }
         patientMedicalRecords(patient).forEach((record) => {
-          if (record.id === activeRecordId) return;
+          if (activeRecordView !== "all" && record.id === activeRecordId) return;
+          const recordKind = record.recordKind || "visit";
+          if (excludedPrescriptionSourceKinds.has(recordKind)) return;
           const recordDay = record.date || recordTimestamp(record).slice(0, 10);
-          const sameVisitDay = recordDay === activeRecordDate || recordDay === patient.date;
+          const sameVisitDay = activeRecordView === "all" || recordDay === activeRecordDate || recordDay === patient.date;
           if (!sameVisitDay) return;
-          if (!["addon", "prescription"].includes(record.recordKind || "visit")) return;
           addFragment(prescriptionHtmlFromRecord(record));
         });
         return fragments.join("<br>");
