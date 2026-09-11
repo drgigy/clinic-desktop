@@ -355,13 +355,32 @@
       .settings-toolbar button { min-height: 38px; min-width: 42px; padding: 8px 12px; }
       .clinic-style-controls { display: grid; grid-template-columns: minmax(220px, 1fr) 150px; gap: 10px; align-items: end; margin: 8px 0; }
       .clinic-style-controls input[type="color"] { min-height: 44px; padding: 5px; }
-      .settings-check { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; color: var(--ink); font-weight: 850; }
-      .settings-check input { width: 18px; height: 18px; accent-color: var(--primary); flex: 0 0 auto; }
-      .settings-check span { display: grid; gap: 3px; }
-      .settings-check small { color: var(--muted); font-size: 13px; font-weight: 750; line-height: 1.35; }
       .credentials-editor { min-height: 120px; border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; background: #fff; outline: none; line-height: 1.45; }
       .credentials-editor:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(22, 131, 113, .12); }
       .credentials-editor:empty::before { content: attr(data-placeholder); color: var(--muted); white-space: pre-wrap; }
+      .prescription-layout-card { width: min(1080px, calc(100vw - 40px)); max-height: calc(100vh - 28px); overflow: auto; padding: 30px; border-radius: 0 0 18px 18px; }
+      .prescription-layout-head { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; margin-bottom: 26px; }
+      .prescription-layout-head h2 { margin: 0 0 16px; font-family: Georgia, "Times New Roman", serif; font-size: 32px; line-height: 1.05; letter-spacing: 0; }
+      .prescription-layout-head p { margin: 0; color: #6d776f; font-size: 18px; line-height: 1.4; font-weight: 500; }
+      .prescription-layout-close { width: 52px; min-width: 52px; min-height: 52px; padding: 0; border-radius: 14px; background: #fff; border: 1px solid #dfe4df; color: #737d75; font-size: 28px; line-height: 1; box-shadow: none; }
+      .layout-card { display: block; margin-top: 18px; padding: 22px; border: 1px solid #dde3de; border-radius: 18px; background: #fff; }
+      .layout-card-title { display: block; margin-bottom: 16px; font-size: 18px; font-weight: 900; color: #202823; }
+      .layout-editor { width: 100%; min-height: 124px; border: 1px solid #dde3de; border-radius: 14px; padding: 18px; background: #fff; font: inherit; font-size: 18px; line-height: 1.45; outline: none; resize: vertical; }
+      .layout-editor:focus, .layout-card .credentials-editor:focus { border-color: #8fbeb3; box-shadow: 0 0 0 4px rgba(22, 131, 113, .14); }
+      .layout-card .credentials-editor { min-height: 124px; border-color: #8fbeb3; border-radius: 14px; padding: 18px; font-size: 18px; line-height: 1.45; }
+      .layout-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 18px 24px; margin-top: 16px; }
+      .layout-option { display: inline-flex; align-items: center; gap: 10px; color: #6d776f; font-size: 16px; font-weight: 850; }
+      .layout-option input, .settings-check input { appearance: none; -webkit-appearance: none; width: 22px; height: 22px; min-width: 22px; min-height: 22px; margin: 0; border: 2px solid #89918b; border-radius: 4px; background: #fff; display: inline-grid; place-items: center; position: relative; }
+      .layout-option input:checked, .settings-check input:checked { border-color: #2f6f61; background: #2f6f61; }
+      .layout-option input:checked::after, .settings-check input:checked::after { content: "✓"; color: #fff; font-size: 18px; font-weight: 950; line-height: 1; transform: translateY(-1px); }
+      .layout-size { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; color: #6d776f; font-size: 16px; font-weight: 850; }
+      .layout-size select { min-height: 50px; min-width: 130px; border-radius: 12px; }
+      .settings-check { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 0; padding: 22px; border: 1px solid #dde3de; border-radius: 18px; background: #fff; }
+      .settings-check span { display: grid; gap: 6px; }
+      .settings-check strong { font-size: 18px; line-height: 1.1; color: #202823; }
+      .settings-check small { color: #6d776f; font-size: 15px; line-height: 1.3; font-weight: 750; }
+      .settings-hidden { display: none !important; }
+      .settings-actions { display: flex; justify-content: flex-end; gap: 16px; margin-top: 28px; }
       .comment-select { min-height: 82px; }
       .settings-comment-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
       .settings-comment-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; border-radius: 999px; padding: 0 10px 0 12px; background: #edf2f5; color: #334454; font-size: 13px; font-weight: 850; }
@@ -988,12 +1007,22 @@
           </section>
 
           <section class="add-patient-modal" id="settingsModal" aria-hidden="true">
-            <div class="add-patient-card">
-            <div class="section-head">
-              <h2>Settings</h2>
-              <button class="secondary" type="button" id="closeSettingsBtn">Close</button>
+            <div class="add-patient-card prescription-layout-card">
+            <div class="prescription-layout-head">
+              <div>
+                <h2>Prescription layout</h2>
+                <p>Set the header, footer/advice, and signature text used when printing prescriptions from Rx.</p>
+              </div>
+              <button class="secondary prescription-layout-close" type="button" id="closeSettingsBtn" aria-label="Close settings">×</button>
             </div>
-            <label class="settings-block">
+            <label class="settings-check">
+              <span>
+                <strong>Malayalam instructions</strong>
+                <small>Show Malayalam patient instruction lines in visit note and prescription print.</small>
+              </span>
+              <input id="malayalamInstructionsToggle" type="checkbox" />
+            </label>
+            <label class="settings-block settings-hidden">
               Clinic credentials shown on home page
               <div class="settings-toolbar" aria-label="Clinic name formatting">
                 <button class="secondary" type="button" data-clinic-name-format="bold"><b>B</b></button>
@@ -1015,22 +1044,44 @@
               </div>
               <div id="clinicName" class="credentials-editor" contenteditable="true" role="textbox" aria-label="Clinic name" data-placeholder="Clinic name"></div>
             </label>
-            <label class="settings-block">
-              Doctor credentials for prescription / certificate / reply letter print
-              <div class="settings-toolbar" aria-label="Credential formatting">
-                <button class="secondary" type="button" data-credentials-format="bold"><b>B</b></button>
-                <button class="secondary" type="button" data-credentials-format="italic"><i>I</i></button>
-              </div>
+            <label class="layout-card">
+              <span class="layout-card-title">Header</span>
               <div id="doctorCredentials" class="credentials-editor" contenteditable="true" role="textbox" aria-label="Doctor credentials" data-placeholder="Doctor credentials"></div>
+              <div class="layout-controls">
+                <label class="layout-option"><input type="checkbox" checked /> Include in print</label>
+                <label class="layout-option"><input type="checkbox" checked /> Bold</label>
+                <label class="layout-option"><input type="checkbox" /> Italic</label>
+                <label class="layout-size">Size
+                  <select aria-label="Header size"><option>Large</option><option>Medium</option><option>Small</option></select>
+                </label>
+              </div>
             </label>
-            <label class="settings-check">
-              <input id="malayalamInstructionsToggle" type="checkbox" />
-              <span>
-                <strong>Malayalam instructions</strong>
-                <small>Include Malayalam patient instruction lines in visit notes and prescription prints.</small>
-              </span>
+            <label class="layout-card">
+              <span class="layout-card-title">Footer / advice</span>
+              <textarea class="layout-editor" id="prescriptionFooterAdvice">If you develop any rash, breathing difficulty, swelling, severe allergy symptoms, or any unexpected reaction, please contact us immediately or get urgent medical attention. Emergency contact: +91 12345678 , Metro Hospital, , Ernakulam.</textarea>
+              <div class="layout-controls">
+                <label class="layout-option"><input type="checkbox" checked /> Include in print</label>
+                <label class="layout-option"><input type="checkbox" /> Bold</label>
+                <label class="layout-option"><input type="checkbox" /> Italic</label>
+                <label class="layout-size">Size
+                  <select aria-label="Footer size"><option>Small</option><option>Medium</option><option>Large</option></select>
+                </label>
+              </div>
             </label>
-            <label class="settings-block">
+            <label class="layout-card">
+              <span class="layout-card-title">Signature</span>
+              <textarea class="layout-editor" id="prescriptionSignatureText">Dr Gigy Kuruttukulam MD, DM
+Consultant Neurologist</textarea>
+              <div class="layout-controls">
+                <label class="layout-option"><input type="checkbox" checked /> Include in print</label>
+                <label class="layout-option"><input type="checkbox" checked /> Bold</label>
+                <label class="layout-option"><input type="checkbox" /> Italic</label>
+                <label class="layout-size">Size
+                  <select aria-label="Signature size"><option>Medium</option><option>Small</option><option>Large</option></select>
+                </label>
+              </div>
+            </label>
+            <label class="settings-block settings-hidden">
               Reusable patient comments
               <div class="settings-grid">
                 <input id="newPatientComment" autocomplete="off" placeholder="Example: relative, VIP, doctor referral" />
@@ -1038,7 +1089,7 @@
               </div>
               <div class="settings-comment-list" id="settingsCommentsList"></div>
             </label>
-            <label class="settings-block">
+            <label class="settings-block settings-hidden">
               Reusable diagnoses
               <div class="settings-grid">
                 <input id="newDiagnosis" autocomplete="off" placeholder="Example: Migraine, Neuropathy, Vertigo" />
@@ -1046,7 +1097,7 @@
               </div>
               <div class="settings-comment-list" id="settingsDiagnosisList"></div>
             </label>
-            <label class="settings-block">
+            <label class="settings-block settings-hidden">
               Staff tests
               <div class="settings-grid">
                 <input id="newStaffTest" autocomplete="off" placeholder="Example: Nerve test, EEG, MRI" />
@@ -1054,8 +1105,10 @@
               </div>
               <div class="settings-comment-list" id="settingsTestsList"></div>
             </label>
-            <div class="actions">
-              <button class="primary" type="button" id="saveAuthorizationKeyBtn">Save settings</button>
+            <div class="settings-actions">
+              <button class="secondary" type="button" id="resetPrescriptionLayoutBtn">Reset</button>
+              <button class="secondary" type="button" id="closeSettingsFooterBtn">Close</button>
+              <button class="primary" type="button" id="saveAuthorizationKeyBtn">Save layout</button>
             </div>
             <div class="record-status" id="settingsStatus"></div>
             </div>
@@ -1407,6 +1460,8 @@
       let neuroAnalysisExpanded = false;
       let medicalRecords = [];
       let neuroStats = [];
+      const defaultPrescriptionFooterAdvice = "If you develop any rash, breathing difficulty, swelling, severe allergy symptoms, or any unexpected reaction, please contact us immediately or get urgent medical attention. Emergency contact: +91 12345678 , Metro Hospital, , Ernakulam.";
+      const defaultPrescriptionSignature = "Dr Gigy Kuruttukulam MD, DM\nConsultant Neurologist";
       let clinicSettings = {
         doctorCredentials: "",
         patientComments: [],
@@ -1414,7 +1469,11 @@
         staffTests: undefined,
         clinicName: "",
         malayalamInstructions: true,
-        clinicNameStyle: parseStoredObject(clinicNameStyleStore, { size: "medium", color: "#17222b" })
+        clinicNameStyle: parseStoredObject(clinicNameStyleStore, { size: "medium", color: "#17222b" }),
+        prescriptionLayout: {
+          footerAdvice: defaultPrescriptionFooterAdvice,
+          signatureText: defaultPrescriptionSignature
+        }
       };
       let activeRecordPatientId = "";
       let activeRecordId = "";
@@ -1953,6 +2012,10 @@
             clinicName: "",
             malayalamInstructions: true,
             clinicNameStyle: parseStoredObject(clinicNameStyleStore, { size: "medium", color: "#17222b" }),
+            prescriptionLayout: {
+              footerAdvice: defaultPrescriptionFooterAdvice,
+              signatureText: defaultPrescriptionSignature
+            },
             ...(snapshot.exists() ? snapshot.data() : {})
           };
           writeStore(doctorCredentialsStore, clinicSettings.doctorCredentials || "");
@@ -1973,6 +2036,7 @@
           if (!$("#settingsModal").classList.contains("open")) {
             setClinicNameStyleControls();
             setMalayalamInstructionControl();
+            setPrescriptionLayoutControls();
           }
           renderCommentSelects();
           renderDiagnosisSelects();
@@ -2030,6 +2094,20 @@
       function setMalayalamInstructionControl() {
         const toggle = $("#malayalamInstructionsToggle");
         if (toggle) toggle.checked = malayalamInstructionsEnabled();
+      }
+      function prescriptionLayoutSettings() {
+        return {
+          footerAdvice: defaultPrescriptionFooterAdvice,
+          signatureText: defaultPrescriptionSignature,
+          ...(clinicSettings.prescriptionLayout || {})
+        };
+      }
+      function setPrescriptionLayoutControls() {
+        const layout = prescriptionLayoutSettings();
+        const footer = $("#prescriptionFooterAdvice");
+        const signature = $("#prescriptionSignatureText");
+        if (footer) footer.value = layout.footerAdvice || "";
+        if (signature) signature.value = layout.signatureText || "";
       }
       function normaliseComments(comments = []) {
         return [...new Set((Array.isArray(comments) ? comments : [])
@@ -5009,6 +5087,15 @@ ${context}`);
       function doctorCredentialsHtml() {
         return cleanCredentialsHtml(clinicSettings.doctorCredentials || "");
       }
+      function prescriptionFooterAdviceHtml() {
+        const text = prescriptionLayoutSettings().footerAdvice || "";
+        return escapeHtml(text).replace(/\n/g, "<br>");
+      }
+      function prescriptionSignatureHtml(extraClass = "") {
+        const text = prescriptionLayoutSettings().signatureText || "";
+        const html = escapeHtml(text).replace(/\n/g, "<br>");
+        return html ? `<div class="medical-signature ${extraClass}">${html}</div>` : "";
+      }
       function doctorCredentialsPrintHtml() {
         const html = doctorCredentialsHtml();
         if (!html) return html;
@@ -5486,9 +5573,9 @@ ${context}`);
               ${medicineRows ? `<div class="prescription-list">${medicineRows}</div>` : `<div>${html}</div>`}
               ${instructionRows ? `<div class="prescription-instructions"><h2>Instructions</h2>${instructionRows}</div>` : ""}
               <div class="prescription-alert">
-                If you develop any rash, breathing difficulty, swelling, severe allergy symptoms, or any unexpected reaction, please contact us immediately or get urgent medical attention.
+                ${prescriptionFooterAdviceHtml()}
               </div>
-              ${medicalPrintSignature("prescription-signature")}
+              ${prescriptionSignatureHtml("prescription-signature")}
             </div>
           </div>
         `;
@@ -5778,12 +5865,13 @@ ${context}`);
         $("#clinicName").innerHTML = clinicNameHtml();
         setClinicNameStyleControls();
         setMalayalamInstructionControl();
+        setPrescriptionLayoutControls();
         $("#doctorCredentials").innerHTML = doctorCredentialsHtml();
         renderSettingsComments();
         renderSettingsDiagnoses();
         $("#settingsModal").classList.add("open");
         $("#settingsModal").setAttribute("aria-hidden", "false");
-        $("#clinicName").focus();
+        $("#doctorCredentials").focus();
       }
       function closeSettingsModal() {
         $("#settingsModal").classList.remove("open");
@@ -7231,6 +7319,14 @@ ${context}`);
         }
         if (button.id === "openSettingsBtn") openSettingsModal();
         if (button.id === "closeSettingsBtn") closeSettingsModal();
+        if (button.id === "closeSettingsFooterBtn") closeSettingsModal();
+        if (button.id === "resetPrescriptionLayoutBtn") {
+          $("#doctorCredentials").innerHTML = "";
+          $("#prescriptionFooterAdvice").value = defaultPrescriptionFooterAdvice;
+          $("#prescriptionSignatureText").value = defaultPrescriptionSignature;
+          $("#malayalamInstructionsToggle").checked = true;
+          $("#settingsStatus").textContent = "Layout reset. Press Save layout to keep these changes.";
+        }
         if (button.id === "openNeuroBtn") openNeuroScreen();
         if (button.id === "closeNeuroBtn") closeNeuroScreen();
         if (button.id === "lockNeuroBtn") lockNeuro();
@@ -7415,8 +7511,12 @@ ${context}`);
           };
           const credentials = cleanCredentialsHtml($("#doctorCredentials").innerHTML);
           const malayalamInstructions = $("#malayalamInstructionsToggle")?.checked !== false;
-          await saveClinicSettingsPatch({ clinicName, clinicNameStyle, doctorCredentials: credentials, malayalamInstructions });
-          $("#settingsStatus").textContent = "Settings saved.";
+          const prescriptionLayout = {
+            footerAdvice: $("#prescriptionFooterAdvice")?.value.trim() || "",
+            signatureText: $("#prescriptionSignatureText")?.value.trim() || ""
+          };
+          await saveClinicSettingsPatch({ clinicName, clinicNameStyle, doctorCredentials: credentials, malayalamInstructions, prescriptionLayout });
+          $("#settingsStatus").textContent = "Layout saved.";
           closeSettingsModal();
         }
         if (button.dataset.accountDelete) { const id = button.dataset.accountDelete; accounts = accounts.filter((entry) => entry.id !== id); deleteAccountFromCloud(id); renderAccounts(); }
