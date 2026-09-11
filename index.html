@@ -1420,7 +1420,7 @@
       let activeRecordDirty = false;
       let activeRecordType = "visit";
       let activeRecordDocs = {};
-      const printQueueDocumentTypes = ["prescription", "certificate", "reply"];
+      const printQueueDocumentTypes = ["prescription", "certificate", "reply", "visit"];
       let printQueueFilter = "pending";
       let pendingPrintQueueItem = null;
       let activeRecordSource = "typed";
@@ -4031,7 +4031,8 @@ ${context}`);
         return {
           prescription: "Prescription",
           certificate: "Medical Certificate",
-          reply: "Reply Letter"
+          reply: "Reply Letter",
+          visit: "Visit Note"
         }[kind] || "";
       }
       function printQueueRecordDate(record) {
@@ -4118,6 +4119,9 @@ ${context}`);
         if (kind === "prescription") {
           return formatPrescriptionPrintHtml(stripDuplicateDocumentTitle(rawHtml, "Prescription"), patient, recordTimestamp(record));
         }
+        if (kind === "visit") {
+          return formatVisitNotePrintHtml(rawHtml, patient, recordTimestamp(record));
+        }
         const withoutTitle = stripDuplicateDocumentTitle(rawHtml, documentTitleForMode(kind) || ambientModeLabel(kind));
         return formatDocumentPrintHtml(withoutTitle, patient, kind, recordTimestamp(record));
       }
@@ -4129,7 +4133,7 @@ ${context}`);
         }
         const kind = record.recordKind || "visit";
         if (!printQueueDocumentTypes.includes(kind)) {
-          alert("Only prescriptions, medical certificates, and reply letters can be printed from the staff queue.");
+          alert("Only explicitly queued prescriptions, visit notes, medical certificates, and reply letters can be printed from the staff queue.");
           return;
         }
         if (printQueueRecordDate(record) !== selectedDate) {
@@ -4180,7 +4184,7 @@ ${context}`);
         const record = medicalRecords.find((item) => item.id === activeRecordId);
         if (!record) return "";
         const kind = record.recordKind || "visit";
-        if (printQueueDocumentTypes.includes(kind)) return "";
+        if (["prescription", "certificate", "reply", "summary"].includes(kind)) return "";
         const sourceHtml = activeRecordDocs.printVisit || record.docs?.printVisit || activeRecordDocs.visit || printableRecordBody(record) || $("#medicalNoteText")?.innerHTML || "";
         return extractPrescriptionFromVisitHtml(sourceHtml || "");
       }
@@ -4198,6 +4202,9 @@ ${context}`);
       function updateQueuePrintButtonVisibility() {
         const button = $("#recordQueuePrintBtn");
         if (!button) return;
+        button.hidden = true;
+        button.disabled = true;
+        return;
         const record = activeQueueableRecord();
         const visitPrescriptionHtml = selectedVisitPrescriptionHtml();
         button.hidden = !record && !visitPrescriptionHtml;
