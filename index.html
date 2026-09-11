@@ -278,7 +278,7 @@
       }
       .record-main { display: grid; grid-template-rows: auto 1fr; gap: 10px; min-height: 0; height: 100%; }
       .record-status { min-height: 20px; color: var(--muted); font-size: 13px; font-weight: 850; }
-      .ambient-dock { display: none; position: fixed; left: 14px; bottom: 22px; z-index: 45; width: min(560px, calc(100vw - 32px)); aspect-ratio: 16 / 9; min-height: 0; padding: 18px 22px; border: 0; border-radius: 18px; background: #1b1b1d; color: #f7f7fb; box-shadow: 0 20px 46px rgba(16, 24, 43, .28); user-select: none; touch-action: none; cursor: move; }
+      .ambient-dock { display: none; position: fixed; left: 14px; bottom: 22px; z-index: 45; width: min(374px, calc(100vw - 32px)); aspect-ratio: 16 / 9; min-height: 0; padding: 14px 18px; border: 0; border-radius: 18px; background: #1b1b1d; color: #f7f7fb; box-shadow: 0 20px 46px rgba(16, 24, 43, .28); user-select: none; touch-action: none; cursor: move; }
       .ambient-dock.visible { display: grid; grid-template-rows: auto 1fr; gap: 8px; }
       .ambient-float-head { display: flex; align-items: center; justify-content: space-between; min-height: 32px; padding-right: 58px; cursor: move; position: relative; }
       .ambient-recording-label { display: inline-flex; align-items: center; gap: 7px; color: #ff514a; font-size: 13px; font-weight: 900; }
@@ -293,6 +293,7 @@
       .ambient-dock .ambient-countdown { color: #f7f7fb; font-size: 44px; line-height: 1; font-weight: 900; }
       .ambient-float-extend { position: absolute; top: 0; right: 0; width: 44px; height: 32px; min-height: 32px; padding: 0; border-radius: 999px; background: #2f2f32; color: #f7f7fb; font-size: 15px; font-weight: 900; }
       .ambient-float-actions { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .ambient-dock.is-idle .ambient-float-actions { justify-content: center; }
       .ambient-transcribe { width: auto; min-width: 120px; min-height: 48px; padding: 0 16px; border-radius: 999px; background: #ff514a; color: #fff; font-size: 15px; font-weight: 900; }
       .ambient-level { width: 82%; height: 44px; display: grid; grid-template-columns: repeat(28, 1fr); gap: 4px; align-items: end; padding: 1px 0; }
       .ambient-level span { height: 4px; border-radius: 999px 999px 3px 3px; background: rgba(255, 81, 74, .22); opacity: .65; transition: height .08s linear, background .08s linear, opacity .08s linear; }
@@ -338,8 +339,8 @@
       }
       .ambient-mic { width: 118px; height: 118px; border-radius: 999px; min-height: 118px; display: inline-grid; place-items: center; font-size: 46px; background: #2563eb; color: #fff; box-shadow: 0 16px 34px rgba(37, 99, 235, .22); }
       .ambient-round { width: 92px; height: 92px; border-radius: 999px; min-height: 92px; display: inline-grid; place-items: center; font-size: 34px; color: #fff; border: 0; }
-      .ambient-dock .ambient-mic { width: 86px; height: 86px; min-height: 86px; font-size: 0; background: #ff514a; box-shadow: 0 12px 26px rgba(255, 81, 74, .24); }
-      .ambient-dock .ambient-mic svg { width: 42px; height: 42px; }
+      .ambient-dock .ambient-mic { width: 72px; height: 72px; min-height: 72px; font-size: 0; background: #ff514a; box-shadow: 0 12px 26px rgba(255, 81, 74, .24); }
+      .ambient-dock .ambient-mic svg { width: 34px; height: 34px; }
       .ambient-dock .ambient-round { width: 58px; height: 58px; min-height: 58px; font-size: 24px; }
       .ambient-dock .ambient-pause { background: #f7f7fb; color: #1b1b1d; }
       .ambient-dock .ambient-stop { background: #2f2f32; color: #ff514a; font-size: 20px; }
@@ -3708,7 +3709,7 @@ ${context}`);
             </button>
           </div>
         `;
-          }).join("") : `<div class="empty">No notes yet. Click Add note.</div>`}
+          }).join("") : `<div class="empty">No notes yet. Click New Note.</div>`}
         `;
       }
       function medicalPrintDisclaimer() {
@@ -3760,7 +3761,7 @@ ${context}`);
           activeRecordSource = "typed";
           activeRecordDocs = {};
           $("#medicalNoteText").setAttribute("contenteditable", "false");
-          $("#medicalNoteText").innerHTML = `<div class="empty">No notes yet. Click Add note.</div>`;
+          $("#medicalNoteText").innerHTML = `<div class="empty">No notes yet. Click New Note.</div>`;
           $("#recordVisitDate").textContent = "All entries";
           $("#recordStatus").textContent = "Draft discarded";
           $("#recordDeleteBtn").hidden = true;
@@ -5839,7 +5840,7 @@ ${context}`);
               <div>${bodyHtml}</div>
             </section>
           `;
-        }).join("") : `<div class="empty">No notes yet. Click Add note.</div>`;
+        }).join("") : `<div class="empty">No notes yet. Click New Note.</div>`;
         $("#recordVisitDate").textContent = "All entries";
         if (draftMedicalRecord?.source === "ambient" && ["recording", "paused", "stopped", "processing"].includes(ambientState)) {
           $("#recordStatus").textContent = "";
